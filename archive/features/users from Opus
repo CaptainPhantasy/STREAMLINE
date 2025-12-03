@@ -1,0 +1,593 @@
+# # CRM-AI PRO Mobile App: Complete System
+# Architecture: One PWA, Role-Based Routes
+┌─────────────────────────────────────────────────────────────────┐
+│                    CRM-AI PRO MOBILE PWA                        │
+│                                                                 │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │    TECH     │ │    SALES    │ │   OFFICE    │ │   OWNER   │ │
+│  │  /tech/*    │ │  /sales/*   │ │  /office/*  │ │  /owner/* │ │
+│  ├─────────────┤ ├─────────────┤ ├─────────────┤ ├───────────┤ │
+│  │ • Gated     │ │ • Briefings │ │ • Clear     │ │ • KPIs    │ │
+│  │   Workflow  │ │ • Meeting   │ │   Gates     │ │ • Revenue │ │
+│  │ • GPS Log   │ │   Transcribe│ │ • Escalate  │ │ • Team    │ │
+│  │ • Photos    │ │ • Route     │ │   Handle    │ │   Status  │ │
+│  │ • Signature │ │   Planning  │ │ • Alerts    │ │ • Alerts  │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │         SHARED: Offline Sync, GPS, Voice Control        │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+## Login redirects based on role:
+* •	tech → /tech/dashboard
+* •	sales → /sales/dashboard (need to add role)
+* •	dispatcher / admin → /office/dashboard
+* •	owner → /owner/dashboard
+
+⠀---
+# PART A: TECH GATED WORKFLOW
+## (See existing plan - Phases 1-8)
+## Summary: Offline-first gated workflow with GPS, photos, satisfaction rating, review discount, signature.
+## ---
+# PART B: SALES MEETING TRANSCRIPTION
+# What Sales People Need
+1. 1	Pre-meeting briefing (DONE - get_sales_briefing tool exists)
+2. 2	Meeting transcription mode - Record + transcribe + auto-log
+3. 3	Route planning - Where am I going, what's the traffic
+4. 4	Follow-up reminders - Don't forget to call back
+
+⠀Phase B1: Sales Dashboard
+## File:app/(mobile)/sales/dashboard/page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Calendar, MapPin, Mic, User, Clock } from 'lucide-react'
+import { BigButton } from '@/components/mobile/big-button'
+import Link from 'next/link'
+
+export default function SalesDashboard() {
+  const [todayMeetings, setTodayMeetings] = useState([])
+  const [nextMeeting, setNextMeeting] = useState(null)
+
+  useEffect(() => {
+    // Fetch today's calendar
+    fetchTodaysMeetings()
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold mb-6">Good Morning!</h1>
+      
+      {/* Next Meeting Card */}
+      {nextMeeting && (
+        <div className="bg-gray-800 rounded-2xl p-6 mb-6">
+          <div className="text-gray-400 mb-2">NEXT UP</div>
+          <div className="text-2xl font-bold">{nextMeeting.contactName}</div>
+          <div className="flex items-center gap-2 text-gray-400 mt-2">
+            <Clock className="w-5 h-5" />
+            <span>{nextMeeting.time}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <MapPin className="w-5 h-5" />
+            <span>{nextMeeting.location}</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <Link href={`/sales/briefing/${nextMeeting.contactId}`}>
+              <BigButton
+                icon={User}
+                label="GET BRIEFING"
+                variant="primary"
+              />
+            </Link>
+            <Link href={`/sales/meeting/${nextMeeting.id}`}>
+              <BigButton
+                icon={Mic}
+                label="START MEETING"
+                variant="success"
+              />
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Today's Schedule */}
+      <h2 className="text-xl font-bold mb-4">Today's Schedule</h2>
+      <div className="space-y-3">
+        {todayMeetings.map(meeting => (
+          <MeetingCard key={meeting.id} meeting={meeting} />
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-8 space-y-4">
+        <BigButton
+          icon={Mic}
+          label="QUICK VOICE NOTE"
+          sublabel="Record a note to log later"
+          variant="warning"
+        />
+      </div>
+    </div>
+  )
+}
+# Phase B2: Meeting Transcription Mode
+## File: `app/(mobile)/sales/meeting/[id]/page.tsx`
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import { Mic, MicOff, Save, X } from 'lucide-react'
+import { BigButton } from '@/components/mobile/big-button'
+import { useParams, useRouter } from 'next/navigation'
+
+export default function MeetingTranscriptionPage() {
+  const params = useParams()
+  const router = useRouter()
+  const meetingId = params.id as string
+
+  const [isRecording, setIsRecording] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [duration, setDuration] = useState(0)
+  const [contact, setContact] = useState(null)
+  const recognitionRef = useRef<any>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    // Initialize Web Speech API
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+      recognitionRef.current = new SpeechRecognition()
+      recognitionRef.current.continuous = true
+      recognitionRef.current.interimResults = true
+
+      recognitionRef.current.onresult = (event: any) => {
+        let finalTranscript = ''
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i]
+          if (result.isFinal) {
+            finalTranscript += result[0].transcript + ' '
+          }
+        }
+        if (finalTranscript) {
+          setTranscript(prev => prev + finalTranscript)
+        }
+      }
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [])
+
+  const startRecording = () => {
+    setIsRecording(true)
+    recognitionRef.current?.start()
+    
+    // Start timer
+    timerRef.current = setInterval(() => {
+      setDuration(d => d + 1)
+    }, 1000)
+  }
+
+  const stopRecording = () => {
+    setIsRecording(false)
+    recognitionRef.current?.stop()
+    if (timerRef.current) clearInterval(timerRef.current)
+  }
+
+  const saveMeeting = async () => {
+    // Call the compile_meeting_report MCP tool via API
+    const response = await fetch('/api/meetings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contactId: contact?.id,
+        transcript,
+        meetingType: 'in_person',
+        title: `Meeting with ${contact?.name}`,
+      }),
+    })
+
+    if (response.ok) {
+      alert('Meeting logged and analyzed!')
+      router.push('/sales/dashboard')
+    }
+  }
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+    const s = seconds % 60
+    return `${m}:${s.toString().padStart(2, '0')}`
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      {/* Header */}
+      <header className="bg-gray-800 p-4 flex items-center justify-between">
+        <button onClick={() => router.back()} className="p-2">
+          <X className="w-6 h-6" />
+        </button>
+        <div className="text-center">
+          <div className="font-bold">Meeting Mode</div>
+          <div className="text-2xl font-mono">{formatTime(duration)}</div>
+        </div>
+        <div className={`w-4 h-4 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-600'}`} />
+      </header>
+
+      {/* Transcript area */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="bg-gray-800 rounded-xl p-4 min-h-[200px]">
+          {transcript || (
+            <span className="text-gray-500">
+              {isRecording ? 'Listening...' : 'Tap to start recording'}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="p-6 space-y-4">
+        {!isRecording ? (
+          <BigButton
+            onClick={startRecording}
+            icon={Mic}
+            label="START RECORDING"
+            sublabel="Tap to begin transcription"
+            variant="success"
+          />
+        ) : (
+          <BigButton
+            onClick={stopRecording}
+            icon={MicOff}
+            label="STOP RECORDING"
+            variant="danger"
+          />
+        )}
+
+        {transcript && !isRecording && (
+          <BigButton
+            onClick={saveMeeting}
+            icon={Save}
+            label="SAVE & ANALYZE"
+            sublabel="AI will extract action items"
+            variant="primary"
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+## ---
+# PART C: OFFICE MANAGER VIEW
+# What Office Managers Need
+1. 1	Gate clearance queue - Low satisfaction jobs needing attention
+2. 2	Escalation handling - Call customer, document resolution
+3. 3	Real-time alerts - New escalations push notification
+
+⠀Phase C1: Office Dashboard
+## File:app/(mobile)/office/dashboard/page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { AlertTriangle, CheckCircle, Phone, MessageSquare } from 'lucide-react'
+import { BigButton } from '@/components/mobile/big-button'
+
+export default function OfficeDashboard() {
+  const [pendingClearances, setPendingClearances] = useState([])
+  const [todayStats, setTodayStats] = useState({
+    jobsCompleted: 0,
+    escalations: 0,
+    avgRating: 0,
+  })
+
+  useEffect(() => {
+    fetchPendingClearances()
+    fetchStats()
+  }, [])
+
+  const fetchPendingClearances = async () => {
+    const res = await fetch('/api/office/clearances')
+    if (res.ok) {
+      const data = await res.json()
+      setPendingClearances(data.pending)
+    }
+  }
+
+  const clearGate = async (completionId: string, notes: string) => {
+    await fetch(`/api/office/clearances/${completionId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ notes }),
+    })
+    fetchPendingClearances()
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold mb-6">Office Dashboard</h1>
+
+      {/* Alerts */}
+      {pendingClearances.length > 0 && (
+        <div className="bg-red-900/50 border border-red-500 rounded-2xl p-4 mb-6">
+          <div className="flex items-center gap-2 text-red-400 font-bold mb-2">
+            <AlertTriangle className="w-6 h-6" />
+            {pendingClearances.length} Escalation(s) Need Attention
+          </div>
+        </div>
+      )}
+
+      {/* Pending Clearances */}
+      <h2 className="text-xl font-bold mb-4">Needs Your Attention</h2>
+      <div className="space-y-4">
+        {pendingClearances.map(item => (
+          <ClearanceCard
+            key={item.id}
+            item={item}
+            onClear={(notes) => clearGate(item.id, notes)}
+          />
+        ))}
+        {pendingClearances.length === 0 && (
+          <div className="text-center text-gray-500 py-8">
+            <CheckCircle className="w-16 h-16 mx-auto mb-2 text-green-500" />
+            All clear! No escalations pending.
+          </div>
+        )}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <BigButton
+            icon={Phone}
+            label="CALL LOG"
+            sublabel="Recent customer calls"
+          />
+          <BigButton
+            icon={MessageSquare}
+            label="SEND SMS"
+            sublabel="Quick message"
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ClearanceCard({ item, onClear }) {
+  const [notes, setNotes] = useState('')
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <div className="bg-gray-800 rounded-2xl p-4">
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="font-bold text-lg">{item.customerName}</div>
+          <div className="text-red-400">Rating: {item.rating}/5</div>
+          <div className="text-gray-400 text-sm">{item.techName} • {item.jobDescription}</div>
+        </div>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-blue-400"
+        >
+          {expanded ? 'Close' : 'Handle'}
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="mt-4 space-y-4">
+          <a
+            href={`tel:${item.customerPhone}`}
+            className="block bg-green-600 text-center py-3 rounded-xl font-bold"
+          >
+            📞 Call {item.customerName}
+          </a>
+          
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Resolution notes..."
+            className="w-full bg-gray-700 rounded-xl p-3 text-white"
+            rows={3}
+          />
+
+          <BigButton
+            onClick={() => onClear(notes)}
+            icon={CheckCircle}
+            label="MARK RESOLVED"
+            variant="success"
+            disabled={!notes}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+## ---
+# PART D: OWNER DASHBOARD
+# What Owners Need
+1. 1	Daily KPIs at a glance - Revenue, jobs, ratings
+2. 2	Team status - Where is everyone, who's busy
+3. 3	Alerts - Issues needing attention
+4. 4	Trends - Week over week comparison
+
+⠀Phase D1: Owner Mobile Dashboard
+## File:app/(mobile)/owner/dashboard/page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { DollarSign, Users, Star, TrendingUp, AlertTriangle } from 'lucide-react'
+
+export default function OwnerDashboard() {
+  const [stats, setStats] = useState({
+    todayRevenue: 0,
+    weekRevenue: 0,
+    jobsToday: 0,
+    jobsCompleted: 0,
+    avgRating: 0,
+    reviewsCollected: 0,
+    techsActive: 0,
+    techsTotal: 0,
+    alerts: [],
+  })
+
+  useEffect(() => {
+    fetchStats()
+    // Refresh every 60 seconds
+    const interval = setInterval(fetchStats, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const fetchStats = async () => {
+    const res = await fetch('/api/owner/stats')
+    if (res.ok) {
+      const data = await res.json()
+      setStats(data)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+      <p className="text-gray-400 mb-6">
+        {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+      </p>
+
+      {/* Alerts */}
+      {stats.alerts.length > 0 && (
+        <div className="bg-red-900/50 border border-red-500 rounded-2xl p-4 mb-6">
+          <div className="flex items-center gap-2 text-red-400 font-bold">
+            <AlertTriangle className="w-5 h-5" />
+            {stats.alerts.length} item(s) need attention
+          </div>
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <StatCard
+          icon={DollarSign}
+          label="Today's Revenue"
+          value={`$${stats.todayRevenue.toLocaleString()}`}
+          color="green"
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="This Week"
+          value={`$${stats.weekRevenue.toLocaleString()}`}
+          color="blue"
+        />
+        <StatCard
+          icon={Star}
+          label="Avg Rating"
+          value={stats.avgRating.toFixed(1)}
+          sublabel={`${stats.reviewsCollected} reviews`}
+          color="yellow"
+        />
+        <StatCard
+          icon={Users}
+          label="Team Active"
+          value={`${stats.techsActive}/${stats.techsTotal}`}
+          color="purple"
+        />
+      </div>
+
+      {/* Jobs Progress */}
+      <div className="bg-gray-800 rounded-2xl p-4 mb-6">
+        <div className="flex justify-between mb-2">
+          <span className="font-bold">Today's Jobs</span>
+          <span>{stats.jobsCompleted}/{stats.jobsToday}</span>
+        </div>
+        <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-green-500 transition-all"
+            style={{ width: `${(stats.jobsCompleted / stats.jobsToday) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Team Status would go here */}
+      <h2 className="text-xl font-bold mb-4">Team Status</h2>
+      <div className="text-gray-500 text-center py-8">
+        Live tech map coming soon
+      </div>
+    </div>
+  )
+}
+
+function StatCard({ icon: Icon, label, value, sublabel, color }) {
+  const colors = {
+    green: 'text-green-400',
+    blue: 'text-blue-400',
+    yellow: 'text-yellow-400',
+    purple: 'text-purple-400',
+  }
+
+  return (
+    <div className="bg-gray-800 rounded-2xl p-4">
+      <Icon className={`w-6 h-6 ${colors[color]} mb-2`} />
+      <div className={`text-2xl font-bold ${colors[color]}`}>{value}</div>
+      <div className="text-gray-400 text-sm">{label}</div>
+      {sublabel && <div className="text-gray-500 text-xs">{sublabel}</div>}
+    </div>
+  )
+}
+## ---
+# PART E: SHARED INFRASTRUCTURE
+# Already Built (from Part A)
+* •	lib/offline/db.ts - Dexie.js offline storage
+* •	lib/offline/sync-service.ts - Background sync
+* •	lib/gps/tracker.ts - GPS tracking
+* •	components/mobile/big-button.tsx - Glove-friendly buttons
+
+⠀Additional Shared Components Needed
+1. 1	Role-based redirect on login
+2. 2	Push notification service
+3. 3	Voice command integration
+
+⠀---
+# API ENDPOINTS NEEDED
+## | Endpoint | Purpose |
+## |----------|---------|
+## |POST /api/tech/gates | Complete workflow gate |
+| `GET /api/sales/briefing/[id]` | Get contact briefing |
+| POST /api/meetings | Create meeting with transcript |
+| GET /api/office/clearances | Pending gate clearances |
+| `POST /api/office/clearances/[id]` | Clear a gate |
+| GET /api/owner/stats | Dashboard statistics |
+---
+# IMPLEMENTATION ORDER
+## | Priority | Feature | Time |
+## |----------|---------|------|
+## | 1 | Tech Gated Workflow (Part A) | 4-6 hrs |
+## | 2 | Sales Meeting Transcription | 2-3 hrs |
+## | 3 | Office Gate Clearance | 2 hrs |
+## | 4 | Owner Dashboard | 2 hrs |
+## | 5 | Push Notifications | 1 hr |
+## | 6 | Voice Commands | 1 hr |
+## Total: ~12-15 hours
+## ---
+# TESTING CHECKLIST
+# Tech App
+* •	[ ] Gates enforce requirements
+* •	[ ] GPS logs on arrival
+* •	[ ] Photos required before proceed
+* •	[ ] Low rating triggers escalation
+* •	[ ] Works offline
+* •	[ ] Syncs when online
+
+⠀Sales App
+* •	[ ] Briefing loads before meeting
+* •	[ ] Transcription captures speech
+* •	[ ] Meeting logs with AI analysis
+* •	[ ] Action items extracted
+
+⠀Office App
+* •	[ ] Escalations show in queue
+* •	[ ] Can call customer from app
+* •	[ ] Clearance releases tech's gate
+* •	[ ] Notes saved with clearance
+
+⠀Owner App
+* •	[ ] Stats refresh automatically
+* •	[ ] Alerts show correctly

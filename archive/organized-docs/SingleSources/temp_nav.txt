@@ -1,0 +1,16 @@
+
+### Navigation
+
+- [UI_UX_MASTER_ROADMAP.md](./UI_UX_MASTER_ROADMAP.md) - Frontend architecture & features
+- [MCP_TOOL_REQUIREMENTS.md](./MCP_TOOL_REQUIREMENTS.md) - AI tools & backend logic
+- [VOICE_AGENT_README.md](./VOICE_AGENT_README.md) - Voice agent integration guide
+- [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) - Database architecture & schema
+- [INTEGRATIONS.md](./INTEGRATIONS.md) - Third-party service integrations
+- [AUTH_PERMISSIONS.md](./AUTH_PERMISSIONS.md) - Authentication & multi-tenant security
+- [CONFIGURATION.md](./CONFIGURATION.md) - Configuration, environment & deployment
+- [OFFLINE_SYNC.md](./OFFLINE_SYNC.md) - PWA offline & background sync
+
+---
+
+**Maintained by:** CRM-AI PRO Development Team
+**Last Index Update:** November 28, 2025

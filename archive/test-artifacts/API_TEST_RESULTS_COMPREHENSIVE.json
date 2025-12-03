@@ -1,0 +1,2074 @@
+{
+  "timestamp": "2025-11-27T15:39:23.783Z",
+  "summary": {
+    "total": 164,
+    "passed": 90,
+    "failed": 4,
+    "warnings": 55,
+    "skipped": 15
+  },
+  "results": [
+    {
+      "endpoint": "/api/auth/signout",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 35
+    },
+    {
+      "endpoint": "/api/users",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 533,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/users",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 532,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/users/me",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 88
+    },
+    {
+      "endpoint": "/api/users/a6f30fc3-a743-48c6-b019-b8696f5996c5",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 15,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/users/a6f30fc3-a743-48c6-b019-b8696f5996c5",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 11,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/users/[id]",
+      "method": "DELETE",
+      "status": "SKIP",
+      "error": "Dangerous - skip delete"
+    },
+    {
+      "endpoint": "/api/account/settings",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 11
+    },
+    {
+      "endpoint": "/api/account/settings",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 8,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/settings/company",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 13
+    },
+    {
+      "endpoint": "/api/settings/company",
+      "method": "PUT",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 15
+    },
+    {
+      "endpoint": "/api/settings/company/logo",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload - requires multipart"
+    },
+    {
+      "endpoint": "/api/settings/profile",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 13
+    },
+    {
+      "endpoint": "/api/settings/profile",
+      "method": "PUT",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 8
+    },
+    {
+      "endpoint": "/api/settings/profile/avatar",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload"
+    },
+    {
+      "endpoint": "/api/settings/notifications",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 17
+    },
+    {
+      "endpoint": "/api/settings/notifications",
+      "method": "PUT",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 22
+    },
+    {
+      "endpoint": "/api/settings/ai/providers",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 11
+    },
+    {
+      "endpoint": "/api/settings/ai/providers",
+      "method": "PUT",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 20
+    },
+    {
+      "endpoint": "/api/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 756
+    },
+    {
+      "endpoint": "/api/contacts",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 144,
+      "error": "Missing required fields: email, firstName",
+      "details": {
+        "error": "Missing required fields: email, firstName"
+      }
+    },
+    {
+      "endpoint": "/api/contacts/bulk",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 195,
+      "error": "Missing required fields: action, contactIds (array)",
+      "details": {
+        "error": "Missing required fields: action, contactIds (array)"
+      }
+    },
+    {
+      "endpoint": "/api/contacts/bulk-tag",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 130,
+      "error": "Missing required field: tagId",
+      "details": {
+        "error": "Missing required field: tagId"
+      }
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 24
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 9,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34/notes",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 774
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34/notes",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 201,
+      "responseTime": 999
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34/tags",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 218
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34/tags",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 481,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "Tag not found"
+      }
+    },
+    {
+      "endpoint": "/api/contact-tags",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 352
+    },
+    {
+      "endpoint": "/api/contact-tags",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 201,
+      "responseTime": 356
+    },
+    {
+      "endpoint": "/api/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 389
+    },
+    {
+      "endpoint": "/api/jobs",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 201,
+      "responseTime": 628
+    },
+    {
+      "endpoint": "/api/jobs/bulk",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 369,
+      "error": "Invalid action. Must be \"assign\" or \"status\"",
+      "details": {
+        "error": "Invalid action. Must be \"assign\" or \"status\""
+      }
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 342
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 14,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517/status",
+      "method": "PATCH",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 817
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517/assign",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 616,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517/location",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 556,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/jobs/[id]/upload-photo",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload"
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517/documents",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 1766
+    },
+    {
+      "endpoint": "/api/jobs/[id]/documents",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload"
+    },
+    {
+      "endpoint": "/api/job-photos",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 2713,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-photos",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload"
+    },
+    {
+      "endpoint": "/api/job-materials",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 304,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-materials",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 88,
+      "error": "Missing required fields: jobId, material_name",
+      "details": {
+        "error": "Missing required fields: jobId, material_name"
+      }
+    },
+    {
+      "endpoint": "/api/estimates",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 168
+    },
+    {
+      "endpoint": "/api/estimates",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 14
+    },
+    {
+      "endpoint": "/api/estimates/quick-create",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 163
+    },
+    {
+      "endpoint": "/api/parts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 906
+    },
+    {
+      "endpoint": "/api/parts",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 10
+    },
+    {
+      "endpoint": "/api/parts/low-stock",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 125
+    },
+    {
+      "endpoint": "/api/invoices",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 2641,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/invoices",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 210,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/payments",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 333,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/payments",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 187,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/conversations",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 2500
+    },
+    {
+      "endpoint": "/api/conversations",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 247,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "Contact not found"
+      }
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 147,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 10,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f/messages",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 623
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f/messages",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 41,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f/notes",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 1044
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f/notes",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 201,
+      "responseTime": 407
+    },
+    {
+      "endpoint": "/api/call-logs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 479
+    },
+    {
+      "endpoint": "/api/call-logs",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 201,
+      "responseTime": 431
+    },
+    {
+      "endpoint": "/api/notifications",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 1082
+    },
+    {
+      "endpoint": "/api/notifications",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 178,
+      "error": "Missing required fields: userId, type, title, message",
+      "details": {
+        "error": "Missing required fields: userId, type, title, message"
+      }
+    },
+    {
+      "endpoint": "/api/notifications/read-all",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 2542
+    },
+    {
+      "endpoint": "/api/email-templates",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 917
+    },
+    {
+      "endpoint": "/api/email-templates",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 201,
+      "responseTime": 789
+    },
+    {
+      "endpoint": "/api/campaigns",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 2059
+    },
+    {
+      "endpoint": "/api/campaigns",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 227,
+      "error": "Missing required fields: name, campaignType",
+      "details": {
+        "error": "Missing required fields: name, campaignType"
+      }
+    },
+    {
+      "endpoint": "/api/automation-rules",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 424,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/automation-rules",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 193,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/settings/automation/rules",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 219
+    },
+    {
+      "endpoint": "/api/settings/automation/rules",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 15
+    },
+    {
+      "endpoint": "/api/ai/suggestions",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 698
+    },
+    {
+      "endpoint": "/api/ai/draft",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 4398,
+      "error": "Endpoint not found (404)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/ai/pricing",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 288
+    },
+    {
+      "endpoint": "/api/ai/briefing",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 263
+    },
+    {
+      "endpoint": "/api/ai/meeting-summary",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 271
+    },
+    {
+      "endpoint": "/api/llm-providers",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 398,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm-providers",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 274,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 3934
+    },
+    {
+      "endpoint": "/api/llm/health",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 503,
+      "responseTime": 196,
+      "error": "HTTP 503",
+      "details": {
+        "healthy": false,
+        "providers": [
+          {
+            "provider": "openai-gpt4o-mini",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "openai-gpt4o",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-haiku-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-sonnet-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          }
+        ],
+        "stats": {
+          "total": 4,
+          "healthy": 0,
+          "unhealthy": 4,
+          "healthPercentage": "0.0%"
+        },
+        "timestamp": "2025-11-27T15:38:04.306Z"
+      }
+    },
+    {
+      "endpoint": "/api/llm/metrics",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 384,
+      "error": "Forbidden - Admin access required",
+      "details": {
+        "error": "Forbidden - Admin access required"
+      }
+    },
+    {
+      "endpoint": "/api/analytics/dashboard",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 871
+    },
+    {
+      "endpoint": "/api/analytics/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 628
+    },
+    {
+      "endpoint": "/api/analytics/revenue",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 557
+    },
+    {
+      "endpoint": "/api/analytics/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 943
+    },
+    {
+      "endpoint": "/api/reports",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 502,
+      "error": "Missing required parameter: type",
+      "details": {
+        "error": "Missing required parameter: type"
+      }
+    },
+    {
+      "endpoint": "/api/reports",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 10,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/reports/customer",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 583
+    },
+    {
+      "endpoint": "/api/reports/financial",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 200
+    },
+    {
+      "endpoint": "/api/reports/revenue",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 194
+    },
+    {
+      "endpoint": "/api/reports/job-performance",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 187
+    },
+    {
+      "endpoint": "/api/reports/tech-performance",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 235
+    },
+    {
+      "endpoint": "/api/reports/export",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 1385
+    },
+    {
+      "endpoint": "/api/finance/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 193
+    },
+    {
+      "endpoint": "/api/audit",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 485,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/dispatch/jobs/active",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 197
+    },
+    {
+      "endpoint": "/api/dispatch/auto-assign",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 272
+    },
+    {
+      "endpoint": "/api/dispatch/techs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 458
+    },
+    {
+      "endpoint": "/api/dispatch/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 725
+    },
+    {
+      "endpoint": "/api/dispatch/historical-gps",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 420
+    },
+    {
+      "endpoint": "/api/tech/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 525
+    },
+    {
+      "endpoint": "/api/tech/gates",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 346
+    },
+    {
+      "endpoint": "/api/tech/materials/quick-add",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 200
+    },
+    {
+      "endpoint": "/api/tech/time-clock",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 202
+    },
+    {
+      "endpoint": "/api/office/clearances",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 202
+    },
+    {
+      "endpoint": "/api/office/clearances",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 8,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/office/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 205
+    },
+    {
+      "endpoint": "/api/owner/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 193
+    },
+    {
+      "endpoint": "/api/sales/briefing/adcc53c7-6f11-4552-abdb-f64e41a7bf34",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 197
+    },
+    {
+      "endpoint": "/api/leads/pipeline",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 228
+    },
+    {
+      "endpoint": "/api/calendar/events",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 43019
+    },
+    {
+      "endpoint": "/api/calendar/events",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 94,
+      "error": "Title, startTime, and endTime are required",
+      "details": {
+        "error": "Title, startTime, and endTime are required"
+      }
+    },
+    {
+      "endpoint": "/api/calendar/sync",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 913,
+      "error": "Failed to sync calendar",
+      "details": {
+        "error": "Failed to sync calendar"
+      }
+    },
+    {
+      "endpoint": "/api/time-entries",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 358,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/time-entries",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 111,
+      "error": "Missing required fields: jobId, action",
+      "details": {
+        "error": "Missing required fields: jobId, action"
+      }
+    },
+    {
+      "endpoint": "/api/documents/upload",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload"
+    },
+    {
+      "endpoint": "/api/photos",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 202
+    },
+    {
+      "endpoint": "/api/photos",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "File upload"
+    },
+    {
+      "endpoint": "/api/templates/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 359
+    },
+    {
+      "endpoint": "/api/templates/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 293
+    },
+    {
+      "endpoint": "/api/search",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 326,
+      "error": "Missing query parameter: q",
+      "details": {
+        "error": "Missing query parameter: q"
+      }
+    },
+    {
+      "endpoint": "/api/export/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 739
+    },
+    {
+      "endpoint": "/api/export/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 477
+    },
+    {
+      "endpoint": "/api/export/invoices",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 687
+    },
+    {
+      "endpoint": "/api/integrations/gmail/status",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 508
+    },
+    {
+      "endpoint": "/api/integrations/gmail/authorize",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 445,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/gmail/callback",
+      "method": "GET",
+      "status": "SKIP",
+      "error": "OAuth callback"
+    },
+    {
+      "endpoint": "/api/integrations/gmail/sync",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 1458,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/gmail/send",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 481,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/status",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 451
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/authorize",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 786,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/callback",
+      "method": "GET",
+      "status": "SKIP",
+      "error": "OAuth callback"
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/sync",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 462,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/calendar/google/authorize",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 193,
+      "error": "accountId is required",
+      "details": {
+        "error": "accountId is required"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/calendar/google/callback",
+      "method": "GET",
+      "status": "SKIP",
+      "error": "OAuth callback"
+    },
+    {
+      "endpoint": "/api/webhooks/elevenlabs",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "Webhook - requires valid signature"
+    },
+    {
+      "endpoint": "/api/webhooks/stripe",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "Webhook - requires valid signature"
+    },
+    {
+      "endpoint": "/api/voice-command",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 164,
+      "error": "Missing required fields: accountId, transcription",
+      "details": {
+        "error": "Missing required fields: accountId, transcription"
+      }
+    },
+    {
+      "endpoint": "/api/send-message",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 239
+    },
+    {
+      "endpoint": "/api/mcp",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 186,
+      "error": {
+        "code": -32600,
+        "message": "Invalid Request"
+      },
+      "details": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32600,
+          "message": "Invalid Request"
+        }
+      }
+    },
+    {
+      "endpoint": "/api/onboarding/status",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 173
+    },
+    {
+      "endpoint": "/api/onboarding/complete",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 171
+    },
+    {
+      "endpoint": "/api/onboarding/dismiss",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 171,
+      "error": "Internal server error",
+      "details": {
+        "error": "Internal server error",
+        "message": "Unexpected end of JSON input"
+      }
+    },
+    {
+      "endpoint": "/api/onboarding/restart",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 179,
+      "error": "Internal server error",
+      "details": {
+        "error": "Internal server error",
+        "message": "Unexpected end of JSON input"
+      }
+    },
+    {
+      "endpoint": "/api/onboarding/analytics",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 177
+    },
+    {
+      "endpoint": "/api/meetings",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 421,
+      "error": "User account not found",
+      "details": {
+        "error": "User account not found"
+      }
+    },
+    {
+      "endpoint": "/api/meetings",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 251,
+      "error": "User account not found",
+      "details": {
+        "error": "User account not found"
+      }
+    },
+    {
+      "endpoint": "/api/meetings/analyze",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 213,
+      "error": "Transcript too short for analysis (minimum 50 characters)",
+      "details": {
+        "error": "Transcript too short for analysis (minimum 50 characters)"
+      }
+    },
+    {
+      "endpoint": "/api/meetings/notes",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 184
+    },
+    {
+      "endpoint": "/api/review-requests",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 1952
+    },
+    {
+      "endpoint": "/api/signatures",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 325,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/signatures",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "Image data required"
+    },
+    {
+      "endpoint": "/api/gps",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 177
+    },
+    {
+      "endpoint": "/api/schedule/optimize",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 603,
+      "error": "Missing or invalid jobIds array",
+      "details": {
+        "error": "Missing or invalid jobIds array"
+      }
+    },
+    {
+      "endpoint": "/api/email/create-job",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 1074,
+      "error": "Unauthorized",
+      "details": {
+        "error": "Unauthorized"
+      }
+    },
+    {
+      "endpoint": "/api/email/extract-actions",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 510
+    },
+    {
+      "endpoint": "/api/test",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 215
+    },
+    {
+      "endpoint": "/api/seed",
+      "method": "POST",
+      "status": "SKIP",
+      "error": "Dangerous - skip seeding"
+    }
+  ],
+  "failures": [
+    {
+      "endpoint": "/api/calendar/sync",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 913,
+      "error": "Failed to sync calendar",
+      "details": {
+        "error": "Failed to sync calendar"
+      }
+    },
+    {
+      "endpoint": "/api/onboarding/dismiss",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 171,
+      "error": "Internal server error",
+      "details": {
+        "error": "Internal server error",
+        "message": "Unexpected end of JSON input"
+      }
+    },
+    {
+      "endpoint": "/api/onboarding/restart",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 179,
+      "error": "Internal server error",
+      "details": {
+        "error": "Internal server error",
+        "message": "Unexpected end of JSON input"
+      }
+    },
+    {
+      "endpoint": "/api/email/create-job",
+      "method": "POST",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 1074,
+      "error": "Unauthorized",
+      "details": {
+        "error": "Unauthorized"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "endpoint": "/api/users",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 533,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/users",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 532,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/users/a6f30fc3-a743-48c6-b019-b8696f5996c5",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 15,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/users/a6f30fc3-a743-48c6-b019-b8696f5996c5",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 11,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/account/settings",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 8,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/contacts",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 144,
+      "error": "Missing required fields: email, firstName",
+      "details": {
+        "error": "Missing required fields: email, firstName"
+      }
+    },
+    {
+      "endpoint": "/api/contacts/bulk",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 195,
+      "error": "Missing required fields: action, contactIds (array)",
+      "details": {
+        "error": "Missing required fields: action, contactIds (array)"
+      }
+    },
+    {
+      "endpoint": "/api/contacts/bulk-tag",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 130,
+      "error": "Missing required field: tagId",
+      "details": {
+        "error": "Missing required field: tagId"
+      }
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 9,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/contacts/adcc53c7-6f11-4552-abdb-f64e41a7bf34/tags",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 481,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "Tag not found"
+      }
+    },
+    {
+      "endpoint": "/api/jobs/bulk",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 369,
+      "error": "Invalid action. Must be \"assign\" or \"status\"",
+      "details": {
+        "error": "Invalid action. Must be \"assign\" or \"status\""
+      }
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 14,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517/assign",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 616,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/jobs/3a7d2408-9b9d-4009-b172-4fcdfeddd517/location",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 556,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/job-photos",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 2713,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-materials",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 304,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-materials",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 88,
+      "error": "Missing required fields: jobId, material_name",
+      "details": {
+        "error": "Missing required fields: jobId, material_name"
+      }
+    },
+    {
+      "endpoint": "/api/invoices",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 2641,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/invoices",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 210,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/payments",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 333,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/payments",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 187,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/conversations",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 247,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "Contact not found"
+      }
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 147,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f",
+      "method": "PUT",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 10,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/conversations/27bd6285-df04-487f-b12f-fdea1bb9789f/messages",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 41,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/notifications",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 178,
+      "error": "Missing required fields: userId, type, title, message",
+      "details": {
+        "error": "Missing required fields: userId, type, title, message"
+      }
+    },
+    {
+      "endpoint": "/api/campaigns",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 227,
+      "error": "Missing required fields: name, campaignType",
+      "details": {
+        "error": "Missing required fields: name, campaignType"
+      }
+    },
+    {
+      "endpoint": "/api/automation-rules",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 424,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/automation-rules",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 193,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/ai/draft",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 4398,
+      "error": "Endpoint not found (404)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/llm-providers",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 398,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm-providers",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 274,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm/health",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 503,
+      "responseTime": 196,
+      "error": "HTTP 503",
+      "details": {
+        "healthy": false,
+        "providers": [
+          {
+            "provider": "openai-gpt4o-mini",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "openai-gpt4o",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-haiku-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-sonnet-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          }
+        ],
+        "stats": {
+          "total": 4,
+          "healthy": 0,
+          "unhealthy": 4,
+          "healthPercentage": "0.0%"
+        },
+        "timestamp": "2025-11-27T15:38:04.306Z"
+      }
+    },
+    {
+      "endpoint": "/api/llm/metrics",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 384,
+      "error": "Forbidden - Admin access required",
+      "details": {
+        "error": "Forbidden - Admin access required"
+      }
+    },
+    {
+      "endpoint": "/api/reports",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 502,
+      "error": "Missing required parameter: type",
+      "details": {
+        "error": "Missing required parameter: type"
+      }
+    },
+    {
+      "endpoint": "/api/reports",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 10,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/audit",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 485,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/office/clearances",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 8,
+      "error": "Method not allowed (405)",
+      "details": null
+    },
+    {
+      "endpoint": "/api/calendar/events",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 94,
+      "error": "Title, startTime, and endTime are required",
+      "details": {
+        "error": "Title, startTime, and endTime are required"
+      }
+    },
+    {
+      "endpoint": "/api/time-entries",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 358,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/time-entries",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 111,
+      "error": "Missing required fields: jobId, action",
+      "details": {
+        "error": "Missing required fields: jobId, action"
+      }
+    },
+    {
+      "endpoint": "/api/search",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 326,
+      "error": "Missing query parameter: q",
+      "details": {
+        "error": "Missing query parameter: q"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/gmail/authorize",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 445,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/gmail/sync",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 1458,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/gmail/send",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 481,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/authorize",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 786,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/sync",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 462,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/integrations/calendar/google/authorize",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 193,
+      "error": "accountId is required",
+      "details": {
+        "error": "accountId is required"
+      }
+    },
+    {
+      "endpoint": "/api/voice-command",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 164,
+      "error": "Missing required fields: accountId, transcription",
+      "details": {
+        "error": "Missing required fields: accountId, transcription"
+      }
+    },
+    {
+      "endpoint": "/api/mcp",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 186,
+      "error": {
+        "code": -32600,
+        "message": "Invalid Request"
+      },
+      "details": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32600,
+          "message": "Invalid Request"
+        }
+      }
+    },
+    {
+      "endpoint": "/api/meetings",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 421,
+      "error": "User account not found",
+      "details": {
+        "error": "User account not found"
+      }
+    },
+    {
+      "endpoint": "/api/meetings",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 251,
+      "error": "User account not found",
+      "details": {
+        "error": "User account not found"
+      }
+    },
+    {
+      "endpoint": "/api/meetings/analyze",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 213,
+      "error": "Transcript too short for analysis (minimum 50 characters)",
+      "details": {
+        "error": "Transcript too short for analysis (minimum 50 characters)"
+      }
+    },
+    {
+      "endpoint": "/api/signatures",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 325,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/schedule/optimize",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 603,
+      "error": "Missing or invalid jobIds array",
+      "details": {
+        "error": "Missing or invalid jobIds array"
+      }
+    }
+  ]
+}

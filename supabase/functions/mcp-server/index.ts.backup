@@ -1,0 +1,1883 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+
+// MCP Server as Supabase Edge Function
+// Exposes CRM tools via Model Context Protocol over HTTP
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-api-key',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+}
+
+interface MCPRequest {
+  jsonrpc: '2.0'
+  method: string
+  params?: any
+  id: string | number
+}
+
+interface MCPResponse {
+  jsonrpc: '2.0'
+  result?: any
+  error?: {
+    code: number
+    message: string
+  }
+  id: string | number
+}
+
+// Tool definitions - ALL 59 tools from crm-tools.ts
+const TOOLS = [
+  // Core Operations
+  {
+    name: 'create_job',
+    description: 'Create a new job/work order. Use this when the user wants to create a job. You will need to collect: contact name, description, and optionally scheduled time and technician.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactName: { type: 'string', description: 'Name of the customer/contact (e.g., "John Smith")' },
+        description: { type: 'string', description: 'Description of the work to be done' },
+        scheduledStart: { type: 'string', description: 'ISO 8601 datetime for scheduled start (optional)' },
+        scheduledEnd: { type: 'string', description: 'ISO 8601 datetime for scheduled end (optional)' },
+        techAssignedId: { type: 'string', description: 'UUID of assigned technician (optional)' },
+      },
+      required: ['contactName', 'description'],
+    },
+  },
+  {
+    name: 'search_contacts',
+    description: 'Search for contacts by name, email, or phone number',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        search: { type: 'string', description: 'Search query (name, email, or phone)' },
+      },
+      required: ['search'],
+    },
+  },
+  {
+    name: 'get_job',
+    description: 'Get details of a specific job by ID',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'update_job_status',
+    description: 'Update the status of a job',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job' },
+        status: {
+          type: 'string',
+          enum: ['lead', 'scheduled', 'en_route', 'in_progress', 'completed', 'invoiced', 'paid'],
+          description: 'New status for the job'
+        },
+      },
+      required: ['jobId', 'status'],
+    },
+  },
+  {
+    name: 'assign_tech',
+    description: 'Assign a technician to a job',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job' },
+        techAssignedId: { type: 'string', description: 'UUID of the technician user' },
+      },
+      required: ['jobId', 'techAssignedId'],
+    },
+  },
+  {
+    name: 'search_contacts',
+    description: 'Search for contacts by name, email, or phone',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        search: { type: 'string', description: 'Search query (name, email, or phone)' },
+      },
+      required: ['search'],
+    },
+  },
+  {
+    name: 'get_job',
+    description: 'Get details of a specific job',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'send_message',
+    description: 'Send a message/email to a contact',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        conversationId: { type: 'string', description: 'UUID of the conversation' },
+        message: { type: 'string', description: 'Message content to send' },
+        subject: { type: 'string', description: 'Email subject line (optional)' },
+      },
+      required: ['conversationId', 'message'],
+    },
+  },
+  // Priority 1 - Core Operations
+  {
+    name: 'list_jobs',
+    description: 'List jobs with optional filters. Use this when user asks "What jobs do I have today?" or "Show me jobs"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', description: 'Filter by status (lead, scheduled, en_route, in_progress, completed, invoiced, paid)' },
+        techId: { type: 'string', description: 'Filter by assigned technician ID' },
+        contactId: { type: 'string', description: 'Filter by contact ID' },
+        date: { type: 'string', description: 'Filter by date (ISO 8601 date string or relative like "today", "tomorrow")' },
+        limit: { type: 'number', description: 'Maximum number of results (default: 50)' },
+        offset: { type: 'number', description: 'Offset for pagination (default: 0)' },
+      },
+    },
+  },
+  {
+    name: 'list_contacts',
+    description: 'List contacts with optional search and filters. Use this when user asks "Show me all contacts" or "List contacts"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        search: { type: 'string', description: 'Search by name, email, or phone' },
+        limit: { type: 'number', description: 'Maximum number of results (default: 50)' },
+        offset: { type: 'number', description: 'Offset for pagination (default: 0)' },
+      },
+    },
+  },
+  {
+    name: 'create_contact',
+    description: 'Create a new contact. Use this when user says "Add a new contact named John Smith"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', description: 'Email address (required)' },
+        firstName: { type: 'string', description: 'First name (required)' },
+        lastName: { type: 'string', description: 'Last name (optional)' },
+        phone: { type: 'string', description: 'Phone number (optional)' },
+        address: { type: 'string', description: 'Address (optional)' },
+      },
+      required: ['email', 'firstName'],
+    },
+  },
+  {
+    name: 'update_contact',
+    description: 'Update contact information. Use this when user says "Update John\'s phone number"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'UUID of the contact or contact name to search' },
+        email: { type: 'string', description: 'New email address' },
+        firstName: { type: 'string', description: 'New first name' },
+        lastName: { type: 'string', description: 'New last name' },
+        phone: { type: 'string', description: 'New phone number' },
+        address: { type: 'string', description: 'New address' },
+      },
+      required: ['contactId'],
+    },
+  },
+  {
+    name: 'get_contact',
+    description: 'Get contact details. Use this when user says "Show me John Smith\'s details"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'UUID of the contact or contact name to search' },
+      },
+      required: ['contactId'],
+    },
+  },
+  {
+    name: 'list_conversations',
+    description: 'List conversations with optional filters. Use this when user asks "What conversations need attention?"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'Filter by contact ID' },
+        status: { type: 'string', description: 'Filter by status (open, closed, snoozed)' },
+        limit: { type: 'number', description: 'Maximum number of results (default: 100)' },
+        offset: { type: 'number', description: 'Offset for pagination (default: 0)' },
+      },
+    },
+  },
+  {
+    name: 'get_conversation',
+    description: 'Get conversation details with messages. Use this when user says "Show me conversation with John"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        conversationId: { type: 'string', description: 'UUID of the conversation or contact name to search' },
+        limit: { type: 'number', description: 'Maximum number of messages (default: 100)' },
+      },
+      required: ['conversationId'],
+    },
+  },
+  {
+    name: 'generate_draft',
+    description: 'Generate an AI draft reply for a conversation. Use this when user says "Generate a reply to this conversation"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        conversationId: { type: 'string', description: 'UUID of the conversation' },
+      },
+      required: ['conversationId'],
+    },
+  },
+  {
+    name: 'assign_tech_by_name',
+    description: 'Assign a technician to a job by technician name. Use this when user says "Assign Mike to job 123"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job or "last" or "current" for context' },
+        techName: { type: 'string', description: 'Name of the technician to assign' },
+      },
+      required: ['jobId', 'techName'],
+    },
+  },
+  {
+    name: 'bulk_operations',
+    description: 'Perform bulk operations on jobs. Use this when user says "Mark all today\'s jobs as completed"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        action: { type: 'string', enum: ['assign', 'status'], description: 'Action to perform' },
+        jobIds: { type: 'array', items: { type: 'string' }, description: 'Array of job IDs' },
+        status: { type: 'string', description: 'New status (required if action is status)' },
+        techId: { type: 'string', description: 'Technician ID (required if action is assign)' },
+        filter: { type: 'object', description: 'Filter criteria instead of jobIds (e.g., {status: "scheduled", date: "today"})' },
+      },
+      required: ['action'],
+    },
+  },
+  // Priority 2 - Field Operations
+  {
+    name: 'upload_photo',
+    description: 'Upload a photo for a job. Note: This requires a photo URL or base64 data. Use this when user says "Upload a photo of the completed work"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job or "last" or "current" for context' },
+        photoUrl: { type: 'string', description: 'URL of the photo to upload' },
+        photoData: { type: 'string', description: 'Base64 encoded photo data' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'capture_location',
+    description: 'Capture location for a job. Use this when user says "I\'m at the job site now"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job or "last" or "current" for context' },
+        latitude: { type: 'number', description: 'Latitude coordinate' },
+        longitude: { type: 'number', description: 'Longitude coordinate' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'clock_in',
+    description: 'Clock in for time tracking. Use this when user says "Clock in"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job (optional)' },
+        notes: { type: 'string', description: 'Notes for the time entry (optional)' },
+      },
+    },
+  },
+  {
+    name: 'clock_out',
+    description: 'Clock out for time tracking. Use this when user says "Clock out"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        timeEntryId: { type: 'string', description: 'UUID of the time entry to clock out (optional, uses most recent)' },
+        notes: { type: 'string', description: 'Notes for the time entry (optional)' },
+      },
+    },
+  },
+  {
+    name: 'add_job_note',
+    description: 'Add a note to a job or contact. Use this when user says "Add a note: customer wants follow-up"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job (optional if contactId provided)' },
+        contactId: { type: 'string', description: 'UUID of the contact (optional if jobId provided)' },
+        conversationId: { type: 'string', description: 'UUID of the conversation (optional)' },
+        content: { type: 'string', description: 'Note content' },
+      },
+      required: ['content'],
+    },
+  },
+  {
+    name: 'get_my_jobs',
+    description: 'Get jobs assigned to the current user (technician). Use this when user says "What are my jobs today?"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', description: 'Filter by status' },
+        date: { type: 'string', description: 'Filter by date (ISO 8601 or relative like "today", "tomorrow")' },
+      },
+    },
+  },
+  // Priority 3 - Business Intelligence
+  {
+    name: 'get_stats',
+    description: 'Get business statistics and dashboard data. Use this when user says "What\'s my revenue this month?"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        period: { type: 'string', description: 'Time period (today, week, month, year)' },
+      },
+    },
+  },
+  {
+    name: 'get_analytics',
+    description: 'Get analytics data. Use this when user says "Show me job completion rates"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['jobs', 'contacts', 'revenue'], description: 'Type of analytics' },
+        period: { type: 'string', description: 'Time period (week, month, year)' },
+      },
+    },
+  },
+  {
+    name: 'search_jobs',
+    description: 'Search jobs by date or other criteria. Use this when user says "Find jobs scheduled for tomorrow"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        date: { type: 'string', description: 'Date filter (ISO 8601 or relative like "today", "tomorrow", "next week")' },
+        status: { type: 'string', description: 'Filter by status' },
+        contactName: { type: 'string', description: 'Filter by contact name' },
+      },
+    },
+  },
+  {
+    name: 'filter_jobs',
+    description: 'Filter jobs by status or other criteria. Use this when user says "Show me all in-progress jobs"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        status: { type: 'string', description: 'Filter by status' },
+        techId: { type: 'string', description: 'Filter by technician ID' },
+        contactId: { type: 'string', description: 'Filter by contact ID' },
+      },
+    },
+  },
+  // Priority 4 - Advanced Operations
+  {
+    name: 'create_invoice',
+    description: 'Create an invoice for a job. Use this when user says "Create an invoice for job 123"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job' },
+        amount: { type: 'number', description: 'Invoice amount' },
+        description: { type: 'string', description: 'Invoice description' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'send_invoice',
+    description: 'Send an invoice to a customer. Use this when user says "Send invoice to customer"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        invoiceId: { type: 'string', description: 'UUID of the invoice' },
+      },
+      required: ['invoiceId'],
+    },
+  },
+  {
+    name: 'create_campaign',
+    description: 'Create a marketing campaign. Use this when user says "Create a marketing campaign"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'Campaign name' },
+        subject: { type: 'string', description: 'Email subject' },
+        body: { type: 'string', description: 'Email body' },
+        templateId: { type: 'string', description: 'Email template ID (optional)' },
+      },
+      required: ['name', 'subject', 'body'],
+    },
+  },
+  {
+    name: 'export_data',
+    description: 'Export data to CSV. Use this when user says "Export all contacts to CSV"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['contacts', 'jobs', 'invoices'], description: 'Type of data to export' },
+        format: { type: 'string', enum: ['csv', 'json'], description: 'Export format (default: csv)' },
+      },
+      required: ['type'],
+    },
+  },
+  // Additional Essential Tools
+  {
+    name: 'update_job',
+    description: 'Update job details. Use this when user wants to modify job information',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job or "last" or "current" for context' },
+        description: { type: 'string', description: 'New description' },
+        scheduledStart: { type: 'string', description: 'New scheduled start time (ISO 8601)' },
+        scheduledEnd: { type: 'string', description: 'New scheduled end time (ISO 8601)' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'delete_job',
+    description: 'Delete a job. Use this when user says "Delete job 123"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        jobId: { type: 'string', description: 'UUID of the job' },
+      },
+      required: ['jobId'],
+    },
+  },
+  {
+    name: 'delete_contact',
+    description: 'Delete a contact. Use this when user says "Delete contact John Smith"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'UUID of the contact or contact name' },
+      },
+      required: ['contactId'],
+    },
+  },
+  {
+    name: 'create_conversation',
+    description: 'Create a new conversation. Use this when user wants to start a new conversation',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'UUID of the contact or contact name' },
+        subject: { type: 'string', description: 'Conversation subject (optional)' },
+        channel: { type: 'string', description: 'Channel (email, phone, etc.) (optional, default: email)' },
+      },
+      required: ['contactId'],
+    },
+  },
+  {
+    name: 'update_conversation_status',
+    description: 'Update conversation status. Use this when user says "Close this conversation"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        conversationId: { type: 'string', description: 'UUID of the conversation or "last" or "current" for context' },
+        status: { type: 'string', enum: ['open', 'closed', 'snoozed'], description: 'New status' },
+      },
+      required: ['conversationId', 'status'],
+    },
+  },
+  {
+    name: 'list_invoices',
+    description: 'List invoices. Use this when user says "Show me all invoices"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: { type: 'number', description: 'Maximum number of results (default: 50)' },
+        offset: { type: 'number', description: 'Offset for pagination (default: 0)' },
+      },
+    },
+  },
+  {
+    name: 'get_invoice',
+    description: 'Get invoice details. Use this when user says "Show me invoice 123"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        invoiceId: { type: 'string', description: 'UUID of the invoice' },
+      },
+      required: ['invoiceId'],
+    },
+  },
+  {
+    name: 'mark_invoice_paid',
+    description: 'Mark an invoice as paid. Use this when user says "Mark invoice 123 as paid"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        invoiceId: { type: 'string', description: 'UUID of the invoice' },
+      },
+      required: ['invoiceId'],
+    },
+  },
+  {
+    name: 'list_payments',
+    description: 'List payments. Use this when user says "Show me all payments"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: { type: 'number', description: 'Maximum number of results (default: 50)' },
+        offset: { type: 'number', description: 'Offset for pagination (default: 0)' },
+      },
+    },
+  },
+  {
+    name: 'create_payment',
+    description: 'Create a payment record. Use this when user says "Record a payment"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        invoiceId: { type: 'string', description: 'UUID of the invoice' },
+        amount: { type: 'number', description: 'Payment amount' },
+        method: { type: 'string', description: 'Payment method (cash, check, card, etc.)' },
+      },
+      required: ['invoiceId', 'amount'],
+    },
+  },
+  {
+    name: 'list_notifications',
+    description: 'List notifications. Use this when user says "Show me notifications"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        unreadOnly: { type: 'boolean', description: 'Show only unread notifications (default: false)' },
+        limit: { type: 'number', description: 'Maximum number of results (default: 50)' },
+      },
+    },
+  },
+  {
+    name: 'mark_notification_read',
+    description: 'Mark a notification as read. Use this when user says "Mark notification as read"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        notificationId: { type: 'string', description: 'UUID of the notification' },
+      },
+      required: ['notificationId'],
+    },
+  },
+  {
+    name: 'list_call_logs',
+    description: 'List call logs. Use this when user says "Show me call logs"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'Filter by contact ID' },
+        limit: { type: 'number', description: 'Maximum number of results (default: 50)' },
+      },
+    },
+  },
+  {
+    name: 'create_call_log',
+    description: 'Create a call log entry. Use this when user says "Log a call"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        contactId: { type: 'string', description: 'UUID of the contact' },
+        direction: { type: 'string', enum: ['inbound', 'outbound'], description: 'Call direction' },
+        duration: { type: 'number', description: 'Call duration in seconds' },
+        notes: { type: 'string', description: 'Call notes' },
+      },
+      required: ['contactId', 'direction'],
+    },
+  },
+  // Navigation Tool
+  {
+    name: 'navigate',
+    description: 'Navigate to a page, open a modal, or switch tabs. Use this when user says "Go to jobs" or "Show me contacts"',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        route: { type: 'string', enum: ['jobs', 'contacts', 'inbox', 'analytics', 'settings', 'dashboard'], description: 'Route to navigate to' },
+        action: { type: 'string', enum: ['open', 'close', 'switch'], description: 'Action to perform' },
+        entityId: { type: 'string', description: 'Entity ID for opening specific entities' },
+        entityType: { type: 'string', enum: ['job', 'contact', 'conversation', 'invoice'], description: 'Type of entity' },
+      },
+      required: ['route', 'action'],
+    },
+  },
+]
+
+// Helper functions from voice-command
+function parseRelativeDate(dateStr: string): string | null {
+  const lower = dateStr.toLowerCase().trim()
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+  if (lower === 'today') {
+    return today.toISOString().split('T')[0]
+  }
+  if (lower === 'tomorrow') {
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow.toISOString().split('T')[0]
+  }
+  if (lower === 'yesterday') {
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    return yesterday.toISOString().split('T')[0]
+  }
+  if (lower.includes('next week')) {
+    const nextWeek = new Date(today)
+    nextWeek.setDate(nextWeek.getDate() + 7)
+    return nextWeek.toISOString().split('T')[0]
+  }
+  if (lower.includes('next month')) {
+    const nextMonth = new Date(today)
+    nextMonth.setMonth(nextMonth.getMonth() + 1)
+    return nextMonth.toISOString().split('T')[0]
+  }
+
+  // Try to parse as ISO date
+  try {
+    const parsed = new Date(dateStr)
+    if (!isNaN(parsed.getTime())) {
+      return parsed.toISOString().split('T')[0]
+    }
+  } catch {}
+
+  return null
+}
+
+function resolveContextId(id: string, context: any, type: 'job' | 'contact' | 'conversation'): string | null {
+  if (id === 'last' || id === 'current') {
+    if (type === 'job' && context?.lastJobId) return context.lastJobId
+    if (type === 'contact' && context?.lastContactId) return context.lastContactId
+    if (type === 'conversation' && context?.lastConversationId) return context.lastConversationId
+  }
+  return id
+}
+
+async function findTechByName(supabase: any, accountId: string, techName: string): Promise<string | null> {
+  const searchTerm = techName.trim()
+  const { data: users } = await supabase
+    .from('users')
+    .select('id, first_name, last_name, role')
+    .eq('account_id', accountId)
+    .eq('role', 'tech')
+    .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%`)
+    .limit(5)
+
+  if (!users || users.length === 0) return null
+
+  const exactMatch = users.find((u: any) =>
+    `${u.first_name} ${u.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    searchTerm.toLowerCase().includes(u.first_name?.toLowerCase() || '') ||
+    searchTerm.toLowerCase().includes(u.last_name?.toLowerCase() || '')
+  )
+
+  return exactMatch?.id || users[0].id
+}
+
+async function findContactByName(supabase: any, accountId: string, contactName: string): Promise<string | null> {
+  const searchTerm = contactName.trim()
+  const { data: contacts } = await supabase
+    .from('contacts')
+    .select('id, first_name, last_name')
+    .eq('account_id', accountId)
+    .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%`)
+    .limit(5)
+
+  if (!contacts || contacts.length === 0) return null
+
+  const exactMatch = contacts.find((c: any) =>
+    `${c.first_name} ${c.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    searchTerm.toLowerCase().includes(c.first_name?.toLowerCase() || '') ||
+    searchTerm.toLowerCase().includes(c.last_name?.toLowerCase() || '')
+  )
+
+  return exactMatch?.id || contacts[0].id
+}
+
+function getNextApiUrl(supabaseUrl: string, path: string): string {
+  const appUrl = Deno.env.get('NEXT_PUBLIC_APP_URL') || Deno.env.get('APP_URL')
+  if (appUrl) {
+    return `${appUrl}/api${path}`
+  }
+  const baseUrl = supabaseUrl.replace('/rest/v1', '').replace('/functions/v1', '')
+  return `${baseUrl}/api${path}`
+}
+
+async function handleToolCall(toolName: string, args: any, supabase: any, accountId: string, context?: any): Promise<any> {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+  try {
+    // Core Job Operations
+    if (toolName === 'create_job') {
+      let finalContactId = args.contactId
+      if (!finalContactId && args.contactName) {
+        const searchTerm = args.contactName.trim()
+        const { data: contacts } = await supabase
+          .from('contacts')
+          .select('id, first_name, last_name')
+          .eq('account_id', accountId)
+          .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%`)
+          .limit(5)
+
+        let matched = contacts?.find((c: any) =>
+          `${c.first_name} ${c.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          searchTerm.toLowerCase().includes(c.first_name?.toLowerCase() || '') ||
+          searchTerm.toLowerCase().includes(c.last_name?.toLowerCase() || '')
+        )
+
+        if (matched) {
+          finalContactId = matched.id
+        } else if (contacts && contacts.length > 0) {
+          finalContactId = contacts[0].id
+        }
+      }
+
+      if (!finalContactId) {
+        return { error: 'Contact not found. Please specify contact name or ID.' }
+      }
+
+      const jobRes = await fetch(`${supabaseUrl}/functions/v1/create-job`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId,
+          contactId: finalContactId,
+          description: args.description,
+          scheduledStart: args.scheduledStart,
+          scheduledEnd: args.scheduledEnd,
+          techAssignedId: args.techAssignedId,
+        }),
+      })
+      const jobData = await jobRes.json()
+      return { success: true, result: jobData, jobId: jobData.job?.id }
+    }
+
+    else if (toolName === 'update_job_status') {
+      const statusRes = await fetch(`${supabaseUrl}/functions/v1/update-job-status`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId,
+          jobId: args.jobId,
+          status: args.status,
+        }),
+      })
+      const statusData = await statusRes.json()
+      return { success: true, result: statusData }
+    }
+
+    else if (toolName === 'assign_tech') {
+      const assignRes = await fetch(`${supabaseUrl}/functions/v1/assign-tech`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId,
+          jobId: args.jobId,
+          techAssignedId: args.techAssignedId,
+        }),
+      })
+      const assignData = await assignRes.json()
+      return { success: true, result: assignData }
+    }
+
+    else if (toolName === 'search_contacts') {
+      const { data: contacts } = await supabase
+        .from('contacts')
+        .select('id, first_name, last_name, email, phone')
+        .eq('account_id', accountId)
+        .or(`first_name.ilike.%${args.search}%,last_name.ilike.%${args.search}%,email.ilike.%${args.search}%,phone.ilike.%${args.search}%`)
+        .limit(5)
+      return { contacts: contacts || [], contactCount: contacts?.length || 0 }
+    }
+
+    else if (toolName === 'get_job') {
+      const { data: job } = await supabase
+        .from('jobs')
+        .select('*, contacts(*), users(*)')
+        .eq('id', args.jobId)
+        .eq('account_id', accountId)
+        .single()
+      return { job }
+    }
+
+    else if (toolName === 'send_message') {
+      let convId = args.conversationId
+      if (!convId) {
+        return { error: 'conversationId required for send_message' }
+      }
+      const { data: message } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: convId,
+          direction: 'outbound',
+          body_text: args.message,
+          sender_type: 'user',
+        })
+        .select()
+        .single()
+      return { message }
+    }
+
+    // Priority 1 - Core Operations
+    else if (toolName === 'list_jobs') {
+      let query = supabase
+        .from('jobs')
+        .select('*, contact:contacts(*), tech:users!tech_assigned_id(*)')
+        .eq('account_id', accountId)
+        .order('created_at', { ascending: false })
+        .limit(args.limit || 50)
+        .range(args.offset || 0, (args.offset || 0) + (args.limit || 50) - 1)
+
+      if (args.status) query = query.eq('status', args.status)
+      if (args.techId) query = query.eq('tech_assigned_id', args.techId)
+      if (args.contactId) query = query.eq('contact_id', args.contactId)
+      if (args.date) {
+        const dateStr = parseRelativeDate(args.date)
+        if (dateStr) {
+          const start = new Date(dateStr)
+          start.setHours(0, 0, 0, 0)
+          const end = new Date(dateStr)
+          end.setHours(23, 59, 59, 999)
+          query = query.gte('scheduled_start', start.toISOString()).lte('scheduled_start', end.toISOString())
+        }
+      }
+
+      const { data: jobs, error } = await query
+      if (error) {
+        return { error: `Failed to fetch jobs: ${error.message}` }
+      }
+      return { jobs: jobs || [], jobCount: jobs?.length || 0 }
+    }
+
+    else if (toolName === 'list_contacts') {
+      let query = supabase
+        .from('contacts')
+        .select('*')
+        .eq('account_id', accountId)
+        .order('created_at', { ascending: false })
+        .limit(args.limit || 50)
+        .range(args.offset || 0, (args.offset || 0) + (args.limit || 50) - 1)
+
+      if (args.search) {
+        query = query.or(`first_name.ilike.%${args.search}%,last_name.ilike.%${args.search}%,email.ilike.%${args.search}%,phone.ilike.%${args.search}%`)
+      }
+
+      const { data: contacts, error } = await query
+      if (error) {
+        return { error: `Failed to fetch contacts: ${error.message}` }
+      }
+      return { contacts: contacts || [], contactCount: contacts?.length || 0 }
+    }
+
+    else if (toolName === 'create_contact') {
+      const { data: accountUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('account_id', accountId)
+        .limit(1)
+        .single()
+
+      if (!accountUser) {
+        return { error: 'No user found for account' }
+      }
+
+      const { data: existing } = await supabase
+        .from('contacts')
+        .select('id')
+        .eq('email', args.email)
+        .eq('account_id', accountId)
+        .single()
+
+      if (existing) {
+        return { error: 'Contact with this email already exists', contact: existing }
+      }
+
+      const { data: contact, error } = await supabase
+        .from('contacts')
+        .insert({
+          account_id: accountId,
+          email: args.email,
+          phone: args.phone || null,
+          first_name: args.firstName,
+          last_name: args.lastName || null,
+          address: args.address || null,
+        })
+        .select()
+        .single()
+
+      if (error) {
+        return { error: `Failed to create contact: ${error.message}` }
+      }
+      return { success: true, contact, contactId: contact?.id }
+    }
+
+    else if (toolName === 'update_contact') {
+      let contactId = resolveContextId(args.contactId, context, 'contact')
+      if (!contactId || contactId === args.contactId) {
+        contactId = await findContactByName(supabase, accountId, args.contactId) || args.contactId
+      }
+
+      const updateData: any = {}
+      if (args.email !== undefined) updateData.email = args.email
+      if (args.firstName !== undefined) updateData.first_name = args.firstName
+      if (args.lastName !== undefined) updateData.last_name = args.lastName
+      if (args.phone !== undefined) updateData.phone = args.phone
+      if (args.address !== undefined) updateData.address = args.address
+
+      if (Object.keys(updateData).length === 0) {
+        return { error: 'No fields to update' }
+      }
+
+      const { data: contact, error } = await supabase
+        .from('contacts')
+        .update(updateData)
+        .eq('id', contactId)
+        .eq('account_id', accountId)
+        .select()
+        .single()
+
+      if (error) {
+        return { error: `Failed to update contact: ${error.message}` }
+      }
+      return { success: true, contact }
+    }
+
+    else if (toolName === 'get_contact') {
+      let contactId = resolveContextId(args.contactId, context, 'contact')
+      if (!contactId || contactId === args.contactId) {
+        contactId = await findContactByName(supabase, accountId, args.contactId) || args.contactId
+      }
+
+      const { data: contact, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('id', contactId)
+        .eq('account_id', accountId)
+        .single()
+
+      if (error || !contact) {
+        return { error: 'Contact not found' }
+      }
+      return { contact }
+    }
+
+    else if (toolName === 'list_conversations') {
+      let query = supabase
+        .from('conversations')
+        .select('*, contact:contacts(*)')
+        .eq('account_id', accountId)
+        .order('last_message_at', { ascending: false })
+        .limit(args.limit || 100)
+        .range(args.offset || 0, (args.offset || 0) + (args.limit || 100) - 1)
+
+      if (args.contactId) query = query.eq('contact_id', args.contactId)
+      if (args.status) query = query.eq('status', args.status)
+
+      const { data: conversations, error } = await query
+      if (error) {
+        return { error: `Failed to fetch conversations: ${error.message}` }
+      }
+      return { conversations: conversations || [], conversationCount: conversations?.length || 0 }
+    }
+
+    else if (toolName === 'get_conversation') {
+      let conversationId = resolveContextId(args.conversationId, context, 'conversation')
+      if (!conversationId || conversationId === args.conversationId) {
+        const contactId = await findContactByName(supabase, accountId, args.conversationId)
+        if (contactId) {
+          const { data: conv } = await supabase
+            .from('conversations')
+            .select('id')
+            .eq('contact_id', contactId)
+            .eq('account_id', accountId)
+            .order('last_message_at', { ascending: false })
+            .limit(1)
+            .single()
+          if (conv) conversationId = conv.id
+        }
+      }
+
+      const { data: conversation, error: convError } = await supabase
+        .from('conversations')
+        .select('*, contact:contacts(*)')
+        .eq('id', conversationId)
+        .eq('account_id', accountId)
+        .single()
+
+      if (convError || !conversation) {
+        return { error: 'Conversation not found' }
+      }
+
+      const apiUrl = getNextApiUrl(supabaseUrl, `/conversations/${conversationId}/messages`)
+      const messagesRes = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const messagesData = await messagesRes.json()
+      return { conversation, messages: messagesData.messages || [] }
+    }
+
+    else if (toolName === 'generate_draft') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/ai/draft')
+      const draftRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          conversationId: args.conversationId,
+        }),
+      })
+      const draftText = await draftRes.text()
+      if (!draftRes.ok) {
+        return { error: 'Failed to generate draft' }
+      }
+      return { draft: draftText }
+    }
+
+    else if (toolName === 'assign_tech_by_name') {
+      let jobId = resolveContextId(args.jobId, context, 'job')
+      const techId = await findTechByName(supabase, accountId, args.techName)
+
+      if (!techId) {
+        return { error: `Technician "${args.techName}" not found` }
+      }
+
+      const assignRes = await fetch(`${supabaseUrl}/functions/v1/assign-tech`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accountId,
+          jobId,
+          techAssignedId: techId,
+        }),
+      })
+      const assignData = await assignRes.json()
+      return { success: true, result: assignData }
+    }
+
+    else if (toolName === 'bulk_operations') {
+      let jobIds = args.jobIds || []
+
+      if (args.filter && !jobIds.length) {
+        let filterQuery = supabase
+          .from('jobs')
+          .select('id')
+          .eq('account_id', accountId)
+
+        if (args.filter.status) filterQuery = filterQuery.eq('status', args.filter.status)
+        if (args.filter.date) {
+          const dateStr = parseRelativeDate(args.filter.date)
+          if (dateStr) {
+            const start = new Date(dateStr)
+            start.setHours(0, 0, 0, 0)
+            const end = new Date(dateStr)
+            end.setHours(23, 59, 59, 999)
+            filterQuery = filterQuery.gte('scheduled_start', start.toISOString()).lte('scheduled_start', end.toISOString())
+          }
+        }
+
+        const { data: filteredJobs } = await filterQuery
+        jobIds = filteredJobs?.map((j: any) => j.id) || []
+      }
+
+      if (!jobIds.length) {
+        return { error: 'No jobs found to perform bulk operation' }
+      }
+
+      const apiUrl = getNextApiUrl(supabaseUrl, '/jobs/bulk')
+      const bulkRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: args.action,
+          jobIds,
+          status: args.status,
+          techId: args.techId,
+        }),
+      })
+      const bulkData = await bulkRes.json()
+      if (!bulkRes.ok) {
+        return { error: bulkData.error || 'Failed to perform bulk operation' }
+      }
+      return { success: true, result: bulkData, updatedCount: bulkData.count || 0 }
+    }
+
+    // Priority 2 - Field Operations
+    else if (toolName === 'upload_photo') {
+      let jobId = resolveContextId(args.jobId, context, 'job')
+      const apiUrl = getNextApiUrl(supabaseUrl, `/jobs/${jobId}/upload-photo`)
+      const photoRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          photoUrl: args.photoUrl,
+          photoData: args.photoData,
+        }),
+      })
+      const photoData = await photoRes.json()
+      if (!photoRes.ok) {
+        return { error: photoData.error || 'Failed to upload photo' }
+      }
+      return { success: true, result: photoData }
+    }
+
+    else if (toolName === 'capture_location') {
+      let jobId = resolveContextId(args.jobId, context, 'job')
+      const apiUrl = getNextApiUrl(supabaseUrl, `/jobs/${jobId}/location`)
+      const locationRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          latitude: args.latitude,
+          longitude: args.longitude,
+        }),
+      })
+      const locationData = await locationRes.json()
+      if (!locationRes.ok) {
+        return { error: locationData.error || 'Failed to capture location' }
+      }
+      return { success: true, result: locationData }
+    }
+
+    else if (toolName === 'clock_in') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/time-entries')
+      const clockRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jobId: args.jobId,
+          notes: args.notes,
+        }),
+      })
+      const clockData = await clockRes.json()
+      if (!clockRes.ok) {
+        return { error: clockData.error || 'Failed to clock in' }
+      }
+      return { success: true, result: clockData, timeEntryId: clockData.timeEntry?.id }
+    }
+
+    else if (toolName === 'clock_out') {
+      let timeEntryId = args.timeEntryId
+      if (!timeEntryId) {
+        const { data: recentEntry } = await supabase
+          .from('time_entries')
+          .select('id')
+          .eq('account_id', accountId)
+          .is('end_time', null)
+          .order('start_time', { ascending: false })
+          .limit(1)
+          .single()
+        if (recentEntry) timeEntryId = recentEntry.id
+      }
+
+      if (!timeEntryId) {
+        return { error: 'No active time entry found to clock out' }
+      }
+
+      const apiUrl = getNextApiUrl(supabaseUrl, `/time-entries/${timeEntryId}`)
+      const clockRes = await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          notes: args.notes,
+        }),
+      })
+      const clockData = await clockRes.json()
+      if (!clockRes.ok) {
+        return { error: clockData.error || 'Failed to clock out' }
+      }
+      return { success: true, result: clockData }
+    }
+
+    else if (toolName === 'add_job_note') {
+      let noteTarget = args.jobId || args.contactId
+      if (args.jobId) {
+        noteTarget = resolveContextId(args.jobId, context, 'job')
+      } else if (args.contactId) {
+        noteTarget = resolveContextId(args.contactId, context, 'contact')
+        if (!noteTarget || noteTarget === args.contactId) {
+          noteTarget = await findContactByName(supabase, accountId, args.contactId) || args.contactId
+        }
+      }
+
+      if (!noteTarget) {
+        return { error: 'Job ID or Contact ID required' }
+      }
+
+      const apiUrl = args.jobId
+        ? getNextApiUrl(supabaseUrl, `/jobs/${noteTarget}/notes`)
+        : getNextApiUrl(supabaseUrl, `/contacts/${noteTarget}/notes`)
+
+      const noteRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: args.content,
+          conversationId: args.conversationId,
+        }),
+      })
+      const noteData = await noteRes.json()
+      if (!noteRes.ok) {
+        return { error: noteData.error || 'Failed to add note' }
+      }
+      return { success: true, result: noteData, note: noteData.note }
+    }
+
+    else if (toolName === 'get_my_jobs') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/tech/jobs')
+      const params = new URLSearchParams()
+      if (args.status) params.append('status', args.status)
+      if (args.date) {
+        const dateStr = parseRelativeDate(args.date)
+        if (dateStr) params.append('date', dateStr)
+      }
+
+      const jobsRes = await fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const jobsData = await jobsRes.json()
+      if (!jobsRes.ok) {
+        return { error: jobsData.error || 'Failed to fetch jobs' }
+      }
+      return { jobs: jobsData.jobs || [], stats: jobsData.stats }
+    }
+
+    // Priority 3 - Business Intelligence
+    else if (toolName === 'get_stats') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/analytics/dashboard')
+      const statsRes = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const statsData = await statsRes.json()
+      if (!statsRes.ok) {
+        return { error: statsData.error || 'Failed to fetch stats' }
+      }
+      return { stats: statsData }
+    }
+
+    else if (toolName === 'get_analytics') {
+      const type = args.type || 'jobs'
+      const apiUrl = getNextApiUrl(supabaseUrl, `/analytics/${type}`)
+      const analyticsRes = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const analyticsData = await analyticsRes.json()
+      if (!analyticsRes.ok) {
+        return { error: analyticsData.error || 'Failed to fetch analytics' }
+      }
+      return { analytics: analyticsData }
+    }
+
+    else if (toolName === 'search_jobs') {
+      let query = supabase
+        .from('jobs')
+        .select('*, contact:contacts(*)')
+        .eq('account_id', accountId)
+        .order('created_at', { ascending: false })
+
+      if (args.date) {
+        const dateStr = parseRelativeDate(args.date)
+        if (dateStr) {
+          const start = new Date(dateStr)
+          start.setHours(0, 0, 0, 0)
+          const end = new Date(dateStr)
+          end.setHours(23, 59, 59, 999)
+          query = query.gte('scheduled_start', start.toISOString()).lte('scheduled_start', end.toISOString())
+        }
+      }
+      if (args.status) query = query.eq('status', args.status)
+      if (args.contactName) {
+        const contactId = await findContactByName(supabase, accountId, args.contactName)
+        if (contactId) query = query.eq('contact_id', contactId)
+      }
+
+      const { data: jobs, error } = await query.limit(50)
+      if (error) {
+        return { error: `Failed to search jobs: ${error.message}` }
+      }
+      return { jobs: jobs || [] }
+    }
+
+    else if (toolName === 'filter_jobs') {
+      let query = supabase
+        .from('jobs')
+        .select('*, contact:contacts(*)')
+        .eq('account_id', accountId)
+        .order('created_at', { ascending: false })
+
+      if (args.status) query = query.eq('status', args.status)
+      if (args.techId) query = query.eq('tech_assigned_id', args.techId)
+      if (args.contactId) query = query.eq('contact_id', args.contactId)
+
+      const { data: jobs, error } = await query.limit(50)
+      if (error) {
+        return { error: `Failed to filter jobs: ${error.message}` }
+      }
+      return { jobs: jobs || [] }
+    }
+
+    // Priority 4 - Advanced Operations
+    else if (toolName === 'create_invoice') {
+      let jobId = resolveContextId(args.jobId, context, 'job')
+      const apiUrl = getNextApiUrl(supabaseUrl, '/invoices')
+      const invoiceRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jobId,
+          amount: args.amount,
+          description: args.description,
+        }),
+      })
+      const invoiceData = await invoiceRes.json()
+      if (!invoiceRes.ok) {
+        return { error: invoiceData.error || 'Failed to create invoice' }
+      }
+      return { success: true, result: invoiceData, invoice: invoiceData.invoice }
+    }
+
+    else if (toolName === 'send_invoice') {
+      const apiUrl = getNextApiUrl(supabaseUrl, `/invoices/${args.invoiceId}/send`)
+      const sendRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const sendData = await sendRes.json()
+      if (!sendRes.ok) {
+        return { error: sendData.error || 'Failed to send invoice' }
+      }
+      return { success: true, result: sendData }
+    }
+
+    else if (toolName === 'create_campaign') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/campaigns')
+      const campaignRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: args.name,
+          subject: args.subject,
+          body: args.body,
+          templateId: args.templateId,
+        }),
+      })
+      const campaignData = await campaignRes.json()
+      if (!campaignRes.ok) {
+        return { error: campaignData.error || 'Failed to create campaign' }
+      }
+      return { success: true, result: campaignData, campaign: campaignData.campaign }
+    }
+
+    else if (toolName === 'export_data') {
+      const type = args.type
+      const format = args.format || 'csv'
+      const apiUrl = getNextApiUrl(supabaseUrl, `/export/${type}?format=${format}`)
+      const exportRes = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      if (!exportRes.ok) {
+        const errorData = await exportRes.json()
+        return { error: errorData.error || 'Failed to export data' }
+      }
+      return { exportUrl: exportRes.url, message: `Export completed. ${type} data exported as ${format}.` }
+    }
+
+    // Additional Essential Tools
+    else if (toolName === 'update_job') {
+      let jobId = resolveContextId(args.jobId, context, 'job')
+      const apiUrl = getNextApiUrl(supabaseUrl, `/jobs/${jobId}`)
+      const updateData: any = {}
+      if (args.description !== undefined) updateData.description = args.description
+      if (args.scheduledStart !== undefined) updateData.scheduledStart = args.scheduledStart
+      if (args.scheduledEnd !== undefined) updateData.scheduledEnd = args.scheduledEnd
+
+      const jobRes = await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      })
+      const jobData = await jobRes.json()
+      if (!jobRes.ok) {
+        return { error: jobData.error || 'Failed to update job' }
+      }
+      return { success: true, result: jobData, job: jobData.job }
+    }
+
+    else if (toolName === 'delete_job') {
+      let jobId = resolveContextId(args.jobId, context, 'job')
+      const apiUrl = getNextApiUrl(supabaseUrl, `/jobs/${jobId}`)
+      const deleteRes = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      if (!deleteRes.ok) {
+        const errorData = await deleteRes.json()
+        return { error: errorData.error || 'Failed to delete job' }
+      }
+      return { success: true, message: 'Job deleted successfully' }
+    }
+
+    else if (toolName === 'delete_contact') {
+      let contactId = resolveContextId(args.contactId, context, 'contact')
+      if (!contactId || contactId === args.contactId) {
+        contactId = await findContactByName(supabase, accountId, args.contactId) || args.contactId
+      }
+
+      const apiUrl = getNextApiUrl(supabaseUrl, `/contacts/${contactId}`)
+      const deleteRes = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      if (!deleteRes.ok) {
+        const errorData = await deleteRes.json()
+        return { error: errorData.error || 'Failed to delete contact' }
+      }
+      return { success: true, message: 'Contact deleted successfully' }
+    }
+
+    else if (toolName === 'create_conversation') {
+      let contactId = resolveContextId(args.contactId, context, 'contact')
+      if (!contactId || contactId === args.contactId) {
+        contactId = await findContactByName(supabase, accountId, args.contactId) || args.contactId
+      }
+
+      const apiUrl = getNextApiUrl(supabaseUrl, '/conversations')
+      const convRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contactId,
+          subject: args.subject,
+          channel: args.channel || 'email',
+        }),
+      })
+      const convData = await convRes.json()
+      if (!convRes.ok) {
+        return { error: convData.error || 'Failed to create conversation' }
+      }
+      return { success: true, result: convData, conversation: convData.conversation }
+    }
+
+    else if (toolName === 'update_conversation_status') {
+      let conversationId = resolveContextId(args.conversationId, context, 'conversation')
+      const apiUrl = getNextApiUrl(supabaseUrl, `/conversations/${conversationId}`)
+      const updateRes = await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: args.status,
+        }),
+      })
+      const updateData = await updateRes.json()
+      if (!updateRes.ok) {
+        return { error: updateData.error || 'Failed to update conversation status' }
+      }
+      return { success: true, result: updateData, conversation: updateData.conversation }
+    }
+
+    else if (toolName === 'list_invoices') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/invoices')
+      const params = new URLSearchParams()
+      if (args.limit) params.append('limit', args.limit.toString())
+      if (args.offset) params.append('offset', args.offset.toString())
+
+      const invoicesRes = await fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const invoicesData = await invoicesRes.json()
+      if (!invoicesRes.ok) {
+        return { error: invoicesData.error || 'Failed to fetch invoices' }
+      }
+      return { invoices: invoicesData.invoices || [] }
+    }
+
+    else if (toolName === 'get_invoice') {
+      const apiUrl = getNextApiUrl(supabaseUrl, `/invoices/${args.invoiceId}`)
+      const invoiceRes = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const invoiceData = await invoiceRes.json()
+      if (!invoiceRes.ok) {
+        return { error: invoiceData.error || 'Failed to fetch invoice' }
+      }
+      return { invoice: invoiceData.invoice }
+    }
+
+    else if (toolName === 'mark_invoice_paid') {
+      const apiUrl = getNextApiUrl(supabaseUrl, `/invoices/${args.invoiceId}/mark-paid`)
+      const paidRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const paidData = await paidRes.json()
+      if (!paidRes.ok) {
+        return { error: paidData.error || 'Failed to mark invoice as paid' }
+      }
+      return { success: true, result: paidData }
+    }
+
+    else if (toolName === 'list_payments') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/payments')
+      const params = new URLSearchParams()
+      if (args.limit) params.append('limit', args.limit.toString())
+      if (args.offset) params.append('offset', args.offset.toString())
+
+      const paymentsRes = await fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const paymentsData = await paymentsRes.json()
+      if (!paymentsRes.ok) {
+        return { error: paymentsData.error || 'Failed to fetch payments' }
+      }
+      return { payments: paymentsData.payments || [] }
+    }
+
+    else if (toolName === 'create_payment') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/payments')
+      const paymentRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          invoiceId: args.invoiceId,
+          amount: args.amount,
+          method: args.method,
+        }),
+      })
+      const paymentData = await paymentRes.json()
+      if (!paymentRes.ok) {
+        return { error: paymentData.error || 'Failed to create payment' }
+      }
+      return { success: true, result: paymentData, payment: paymentData.payment }
+    }
+
+    else if (toolName === 'list_notifications') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/notifications')
+      const params = new URLSearchParams()
+      if (args.unreadOnly) params.append('unreadOnly', 'true')
+      if (args.limit) params.append('limit', args.limit.toString())
+
+      const notificationsRes = await fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const notificationsData = await notificationsRes.json()
+      if (!notificationsRes.ok) {
+        return { error: notificationsData.error || 'Failed to fetch notifications' }
+      }
+      return { notifications: notificationsData.notifications || [] }
+    }
+
+    else if (toolName === 'mark_notification_read') {
+      const apiUrl = getNextApiUrl(supabaseUrl, `/notifications/${args.notificationId}`)
+      const readRes = await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          read: true,
+        }),
+      })
+      const readData = await readRes.json()
+      if (!readRes.ok) {
+        return { error: readData.error || 'Failed to mark notification as read' }
+      }
+      return { success: true, result: readData }
+    }
+
+    else if (toolName === 'list_call_logs') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/call-logs')
+      const params = new URLSearchParams()
+      if (args.contactId) params.append('contactId', args.contactId)
+      if (args.limit) params.append('limit', args.limit.toString())
+
+      const callLogsRes = await fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+        },
+      })
+      const callLogsData = await callLogsRes.json()
+      if (!callLogsRes.ok) {
+        return { error: callLogsData.error || 'Failed to fetch call logs' }
+      }
+      return { callLogs: callLogsData.callLogs || [] }
+    }
+
+    else if (toolName === 'create_call_log') {
+      const apiUrl = getNextApiUrl(supabaseUrl, '/call-logs')
+      const callLogRes = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contactId: args.contactId,
+          direction: args.direction,
+          duration: args.duration,
+          notes: args.notes,
+        }),
+      })
+      const callLogData = await callLogRes.json()
+      if (!callLogRes.ok) {
+        return { error: callLogData.error || 'Failed to create call log' }
+      }
+      return { success: true, result: callLogData, callLog: callLogData.callLog }
+    }
+
+    // Navigation Tool
+    else if (toolName === 'navigate') {
+      return {
+        navigation: {
+          route: args.route,
+          action: args.action,
+          entityId: args.entityId,
+          entityType: args.entityType,
+        },
+        message: `Navigate to ${args.route}`
+      }
+    }
+
+    else {
+      return { error: `Unknown tool: ${toolName}` }
+    }
+  } catch (error: any) {
+    return { error: error.message || 'Internal error during tool execution' }
+  }
+}
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: CORS_HEADERS })
+  }
+
+  // Handle GET for SSE endpoint (server notifications)
+  if (req.method === 'GET') {
+    const stream = new ReadableStream({
+      start(controller) {
+        // ElevenLabs may use GET for server-side notifications
+        // For now, just keep connection open
+        const keepAlive = setInterval(() => {
+          try {
+            controller.enqueue(new TextEncoder().encode(': keepalive\n\n'))
+          } catch {
+            clearInterval(keepAlive)
+          }
+        }, 30000)
+      },
+    })
+
+    return new Response(stream, {
+      headers: {
+        ...CORS_HEADERS,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    })
+  }
+
+  // Handle POST for MCP requests
+  if (req.method !== 'POST') {
+    return new Response('Method not allowed', {
+      status: 405,
+      headers: CORS_HEADERS
+    })
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+    // Get account ID (default for now)
+    const accountId = Deno.env.get('DEFAULT_ACCOUNT_ID') || 'fde73a6a-ea84-46a7-803b-a3ae7cc09d00'
+
+    const mcpRequest: MCPRequest = await req.json()
+
+    // Validate MCP request
+    if (mcpRequest.jsonrpc !== '2.0' || !mcpRequest.method) {
+      const response: MCPResponse = {
+        jsonrpc: '2.0',
+        id: mcpRequest.id || 0,
+        error: { code: -32600, message: 'Invalid Request' },
+      }
+      return new Response(JSON.stringify(response), {
+        status: 400,
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Check if client wants SSE response
+    const acceptHeader = req.headers.get('Accept') || ''
+    const wantsSSE = acceptHeader.includes('text/event-stream')
+
+    let result: any
+
+    // Handle MCP methods
+    if (mcpRequest.method === 'initialize') {
+      result = {
+        protocolVersion: '2024-11-05',
+        capabilities: {
+          tools: {}
+        },
+        serverInfo: {
+          name: 'crm-ai-pro-mcp',
+          version: '1.0.0'
+        }
+      }
+    } else if (mcpRequest.method === 'initialized') {
+      // Client acknowledging initialization - just return success
+      result = {}
+    } else if (mcpRequest.method === 'tools/list') {
+      result = { tools: TOOLS }
+    } else if (mcpRequest.method === 'tools/call') {
+      const { name, arguments: args } = mcpRequest.params
+      const toolResult = await handleToolCall(name, args, supabase, accountId)
+      result = {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(toolResult, null, 2),
+          },
+        ],
+      }
+    } else {
+      result = { error: { code: -32601, message: 'Method not found' } }
+    }
+
+    const response: MCPResponse = {
+      jsonrpc: '2.0',
+      id: mcpRequest.id,
+      result,
+    }
+
+    // Return as SSE if requested, otherwise JSON
+    if (wantsSSE) {
+      const sseData = `data: ${JSON.stringify(response)}\n\n`
+      return new Response(sseData, {
+        headers: {
+          ...CORS_HEADERS,
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+        },
+      })
+    }
+
+    return new Response(JSON.stringify(response), {
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    })
+  } catch (error: any) {
+    const response: MCPResponse = {
+      jsonrpc: '2.0',
+      id: 0,
+      error: { code: -32603, message: error.message || 'Internal error' },
+    }
+
+    return new Response(JSON.stringify(response), {
+      status: 500,
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+    })
+  }
+})

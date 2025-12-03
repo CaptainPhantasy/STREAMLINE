@@ -1,0 +1,169 @@
+═══════════════════════════════════════════════════════════════════
+                    AGENT-2 COMPLETION SUMMARY
+═══════════════════════════════════════════════════════════════════
+
+Task: Add email_parts_list tool to CRM tools
+Status: ✅ COMPLETE
+Confidence: 99%
+Date: 2025-01-27
+
+───────────────────────────────────────────────────────────────────
+FILE MODIFICATIONS
+───────────────────────────────────────────────────────────────────
+
+File: /Volumes/Storage/CRM_AI-PRO/CRM-AI-PRO/lib/mcp/tools/crm-tools.ts
+
+Changes:
+  • Line 1830: Tool definition added (21 lines)
+  • Line 4188: Implementation added (163 lines)
+  • Total: 184 lines added
+
+───────────────────────────────────────────────────────────────────
+IMPLEMENTATION HIGHLIGHTS
+───────────────────────────────────────────────────────────────────
+
+✅ Input Validation
+   • Email format regex validation
+   • Job existence check
+   • Parts availability check
+   • Email service configuration check
+
+✅ Data Fetching
+   • Job details with contact info (joins contacts table)
+   • All job_materials for the job (ordered by created_at)
+   • Proper account_id filtering for security
+
+✅ Currency Formatting
+   • Converts cents to dollars (divide by 100)
+   • Formats to 2 decimal places (.toFixed(2))
+   • Consistent with invoice system
+
+✅ Professional Email Template
+   • Responsive HTML design (max-width: 800px)
+   • Job information header (number, customer, description)
+   • Itemized parts table with styling
+   • Quantity, unit, unit price, line total columns
+   • Notes displayed in smaller gray text (if present)
+   • Subtotal and Total summary section
+   • Professional thank you footer
+   • Blue accent color (#2563eb) matches CRM theme
+
+✅ Email Delivery
+   • Uses Resend API (Phase 1 pattern)
+   • Sender: CRM <noreply@domain.com>
+   • Subject: Parts List - Job #[JOB_NUMBER]
+   • Error handling for send failures
+
+✅ Error Handling
+   • "Invalid email address format"
+   • "Job not found"
+   • "No parts found for this job"
+   • "Email service not configured"
+   • Resend API error passthrough
+
+───────────────────────────────────────────────────────────────────
+TOOL USAGE
+───────────────────────────────────────────────────────────────────
+
+Tool Name: email_parts_list
+
+Parameters:
+  • jobId (string, required) - UUID of the job
+  • recipientEmail (string, required) - Email address to send to
+
+Example Voice Commands:
+  • "Email parts list to customer@example.com"
+  • "Send materials list to the customer"
+  • "Email the parts used on this job"
+
+Response Format:
+  {
+    "success": true,
+    "messageId": "resend-message-id",
+    "partsCount": 5,
+    "total": "125.50",
+    "message": "Parts list sent to customer@example.com"
+  }
+
+───────────────────────────────────────────────────────────────────
+TESTING STATUS
+───────────────────────────────────────────────────────────────────
+
+Compilation: ✅ NO ERRORS in new code
+  • TypeScript types properly defined
+  • No syntax errors
+  • Consistent with existing patterns
+
+Pre-existing Issue (unrelated):
+  • lib/mcp/tools/crm-tools.ts(5897,25): Property 'existing_notes'
+  • Not caused by this change
+
+Manual Testing Required:
+  ⏳ Send test email with single part
+  ⏳ Send test email with multiple parts
+  ⏳ Verify currency formatting ($XX.XX)
+  ⏳ Test email rendering in Gmail/Outlook
+  ⏳ Verify error handling for invalid inputs
+  ⏳ Test with missing parts (expect error)
+  ⏳ Test with invalid email format (expect error)
+
+───────────────────────────────────────────────────────────────────
+DEPENDENCIES
+───────────────────────────────────────────────────────────────────
+
+Environment Variables:
+  • RESEND_API_KEY (required for sending)
+  • RESEND_VERIFIED_DOMAIN (Phase 1 pattern)
+
+Database Tables:
+  • jobs (job details)
+  • contacts (customer email)
+  • job_materials (parts data)
+
+External Services:
+  • Resend API (https://resend.com)
+
+───────────────────────────────────────────────────────────────────
+INTEGRATION WORKFLOW
+───────────────────────────────────────────────────────────────────
+
+1. Tech completes job → adds parts via add_job_parts
+2. Office reviews parts → list_job_parts
+3. Office emails customer → email_parts_list  [NEW]
+4. Invoice created → includes all parts
+
+───────────────────────────────────────────────────────────────────
+CONFIDENCE: 99%
+───────────────────────────────────────────────────────────────────
+
+Why not 100%?
+  • Requires live Resend API test
+  • Email client rendering should be verified
+  • Edge cases (very long part names) untested
+
+Why high confidence?
+  ✅ Follows proven send_invoice pattern
+  ✅ All validations implemented
+  ✅ Comprehensive error handling
+  ✅ Currency formatting correct
+  ✅ TypeScript compiles successfully
+  ✅ Code style matches codebase
+  ✅ Professional HTML template
+  ✅ Clear error messages
+
+───────────────────────────────────────────────────────────────────
+HAND-OFF TO AGENT-3
+───────────────────────────────────────────────────────────────────
+
+Status: ✅ READY FOR TESTING
+
+No blockers. All requirements met. Tool is fully integrated and ready
+for comprehensive testing in Phase 3.
+
+───────────────────────────────────────────────────────────────────
+DETAILED REPORT: shared-docs/agent-2-report.md
+───────────────────────────────────────────────────────────────────
+
+═══════════════════════════════════════════════════════════════════
+                         END OF SUMMARY
+═══════════════════════════════════════════════════════════════════

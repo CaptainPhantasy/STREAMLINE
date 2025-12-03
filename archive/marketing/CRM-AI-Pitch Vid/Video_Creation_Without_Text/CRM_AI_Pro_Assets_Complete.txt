@@ -1,0 +1,76 @@
+═══════════════════════════════════════════════════════════════════
+CRM-AI PRO COMMERCIAL - COMPLETE ASSET MANIFEST
+20 Media Assets (10 Videos + 10 Photos) | 16:9 Aspect Ratio | NO TEXT
+═══════════════════════════════════════════════════════════════════
+
+**SEGMENT 1: The Problem**
+├─ VIDEO_1A (10 sec): https://cdn.abacus.ai/videos/fb976e8c-c0b0-40f0-bc9c-4aba1b4a350d.mp4
+├─ FRAME_1A: https://cdn.abacus.ai/images/5ae07b7c-2992-4271-96c6-3649c98010dc.png
+└─ PHOTO_1B: https://cdn.abacus.ai/images/1fff076c-0fc1-4a9c-b0d1-8810ff7453fe.png
+
+**SEGMENT 2: The Old Way Fails**
+├─ VIDEO_2A (10 sec): https://cdn.abacus.ai/videos/1b6c12a9-f675-484f-8623-b8250969bab4.mp4
+├─ FRAME_2A: https://cdn.abacus.ai/images/df825fd9-db67-4e29-9927-2d313ab4cda2.png
+└─ PHOTO_2B: https://cdn.abacus.ai/images/eb9f4810-ae3e-479a-8a49-c5be7d773598.png
+
+**SEGMENT 3: Voice-Native Solution**
+├─ VIDEO_3A (10 sec): https://cdn.abacus.ai/videos/7820de8a-9ea9-4bdf-ba50-073577d86981.mp4
+├─ FRAME_3A: https://cdn.abacus.ai/images/b1b1d093-6a0f-408b-bef8-fe45cdfdda31.png
+└─ PHOTO_3B: https://cdn.abacus.ai/images/eb5f948f-1364-4a77-9260-2669ce26eae6.png
+
+**SEGMENT 4: Voice Workflow Demo**
+├─ VIDEO_4A (10 sec): https://cdn.abacus.ai/videos/96d44279-4d66-4c26-8550-497595ca1fc1.mp4
+├─ FRAME_4A: https://cdn.abacus.ai/images/44b9a9b6-5a49-4bcd-9a1c-6ba4dc1b890e.png
+└─ PHOTO_4B: https://cdn.abacus.ai/images/9bc60857-ecc6-4b53-b2a1-e9a8b4d7886c.jpg
+
+**SEGMENT 5: Gate Enforcement Power**
+├─ VIDEO_5A (10 sec): https://cdn.abacus.ai/videos/cde37552-68e0-4afd-9176-51f665120c9a.mp4
+├─ FRAME_5A: https://cdn.abacus.ai/images/7c29d466-b211-4835-a635-a22688aa0df2.png
+└─ PHOTO_5B: https://cdn.abacus.ai/images/e482d5d8-0889-417b-911f-f452ca557f8e.jpg
+
+**SEGMENT 6: Real-Time Escalation**
+├─ VIDEO_6A (10 sec): https://cdn.abacus.ai/videos/b7ddeec6-1f53-48de-ac16-865216bcaf53.mp4
+├─ FRAME_6A: https://cdn.abacus.ai/images/c0668252-d8a4-474e-806f-f26f8c8acbf4.png
+└─ PHOTO_6B: https://cdn.abacus.ai/images/a481b50d-8c76-4180-9b3b-da47249a86ac.png
+
+**SEGMENT 7: Customer Win**
+├─ VIDEO_7A (10 sec): https://cdn.abacus.ai/videos/c6170095-f865-48cf-b162-f3526daa82a5.mp4
+├─ FRAME_7A: https://cdn.abacus.ai/images/2da8e228-4deb-4197-986b-fde069e71a00.png
+└─ PHOTO_7B: https://cdn.abacus.ai/images/60ea9d54-088c-48fe-8e1e-8a43bdcf15de.png
+
+**SEGMENT 8: Sales Transformation**
+├─ VIDEO_8A (10 sec): https://cdn.abacus.ai/videos/258e36fc-47eb-4748-b9f9-5df73e24f1da.mp4
+├─ FRAME_8A: https://cdn.abacus.ai/images/a9ab0b34-5d61-4f34-863e-01013efdb506.png
+└─ PHOTO_8B: /home/ubuntu/photo_8B.png (will be auto-uploaded)
+
+**SEGMENT 9: Adoption Simplicity + Proof**
+├─ VIDEO_9A (10 sec): https://cdn.abacus.ai/videos/e18fc0ed-60bf-4f14-a898-610cfe0c0498.mp4
+├─ FRAME_9A: /home/ubuntu/frame_9A.png (will be auto-uploaded)
+└─ PHOTO_9B: /home/ubuntu/photo_9B.png (will be auto-uploaded)
+
+**SEGMENT 10: Brand Close**
+├─ VIDEO_10A (10 sec): https://cdn.abacus.ai/videos/88700cd7-a856-4a37-b067-ccef8afbe8ec.mp4
+├─ FRAME_10A: /home/ubuntu/frame_10A.png (will be auto-uploaded)
+└─ PHOTO_10B: /home/ubuntu/photo_10B.png (will be auto-uploaded)
+
+═══════════════════════════════════════════════════════════════════
+TECHNICAL SPECIFICATIONS
+═══════════════════════════════════════════════════════════════════
+• All videos: 10 seconds, 16:9 aspect ratio (1248x704), standard quality
+• All photos: 16:9 aspect ratio
+• Brand colors: Teal (#1a9b9e), Orange (#ff8c42), Dark Blue (#1e3a5f)
+• NO TEXT in any generated media (as required)
+• Professional corporate SaaS aesthetic maintained throughout
+• Videos use cinematic techniques: slow push-ins, tracking shots, split-screens
+• Photos include UI mockups, infographics, and documentary-style photography
+
+═══════════════════════════════════════════════════════════════════
+NOTES
+═══════════════════════════════════════════════════════════════════
+• Videos are 10 seconds (system constraint) vs requested 7-8 seconds
+  → Can be trimmed in post-production to 7-8 seconds as needed
+• Local files (photo_8B, frame_9A, photo_9B, frame_10A, photo_10B) 
+  will be automatically uploaded to CDN after task completion
+• All assets strictly adhere to NO TEXT requirement
+• Ready for post-production text overlay and final editing
+

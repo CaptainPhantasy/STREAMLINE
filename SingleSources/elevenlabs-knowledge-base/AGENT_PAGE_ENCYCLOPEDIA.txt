@@ -1,0 +1,616 @@
+================================================================================
+                    PAGE ENCYCLOPEDIA
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+Complete reference for every page in CRM AI Pro. Use this to explain pages
+to users and understand what features exist where.
+
+================================================================================
+                      DESKTOP PAGES
+================================================================================
+
+--------------------------------------------------------------------------------
+PAGE: INBOX
+--------------------------------------------------------------------------------
+URL: /inbox
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "inbox")
+
+DESCRIPTION:
+The central communications hub. All customer messages, emails, and internal
+notes flow through here.
+
+KEY FEATURES:
+- Unified inbox for all channels (email, form submissions)
+- AI-suggested responses with one-click sending
+- Conversation threading by contact
+- Tags and filters for organization
+- Search across all messages
+- Mark as read/unread, star important items
+- Link conversations to jobs
+
+WHAT USERS CAN DO:
+- Reply to customer messages
+- Draft responses with AI assistance
+- Create jobs from conversations
+- Tag and categorize messages
+- Search message history
+
+--------------------------------------------------------------------------------
+PAGE: JOBS
+--------------------------------------------------------------------------------
+URL: /jobs
+ACCESS: Owner, Admin, Dispatcher
+NAVIGATE COMMAND: navigate(page: "jobs")
+
+DESCRIPTION:
+Work order management central. View, create, edit, and manage all jobs.
+
+KEY FEATURES:
+- List view of all jobs with sorting/filtering
+- Status tabs: Lead, Scheduled, In Progress, Completed, Invoiced, Paid
+- Create new job dialog
+- Quick assign technician
+- Bulk actions (assign, reschedule, delete)
+- Job detail sidebar with full info
+- Search by customer, address, description
+
+WHAT USERS CAN DO:
+- Create new jobs
+- Assign technicians
+- Change job status
+- Reschedule appointments
+- Add materials and notes
+- Generate invoices
+- View job history and photos
+
+--------------------------------------------------------------------------------
+PAGE: CONTACTS
+--------------------------------------------------------------------------------
+URL: /contacts
+ACCESS: Owner, Admin, Dispatcher
+NAVIGATE COMMAND: navigate(page: "contacts")
+
+DESCRIPTION:
+Customer database with complete history for each contact.
+
+KEY FEATURES:
+- Searchable contact list
+- Contact detail view with full profile
+- Job history for each customer
+- Communication history
+- Notes and tags
+- Add/edit contact information
+- Import contacts from CSV
+
+WHAT USERS CAN DO:
+- Search for customers
+- View customer history
+- Add new contacts
+- Edit contact information
+- Add tags for segmentation
+- Add notes about customers
+- See all past jobs and invoices
+
+--------------------------------------------------------------------------------
+PAGE: CALENDAR
+--------------------------------------------------------------------------------
+URL: /calendar
+ACCESS: Owner, Admin, Dispatcher
+NAVIGATE COMMAND: navigate(page: "calendar")
+
+DESCRIPTION:
+Schedule view showing all jobs and team availability.
+
+KEY FEATURES:
+- Week/month calendar views
+- Color-coded by status or technician
+- Drag-and-drop rescheduling
+- Create jobs by clicking time slots
+- View technician availability
+- Sync with Google/Microsoft calendars
+- Conflict detection
+
+WHAT USERS CAN DO:
+- View the week's schedule
+- Reschedule jobs by dragging
+- See who's available when
+- Create new appointments
+- Identify scheduling conflicts
+
+--------------------------------------------------------------------------------
+PAGE: DISPATCH MAP
+--------------------------------------------------------------------------------
+URL: /dispatch/map
+ACCESS: Owner, Admin, Dispatcher
+NAVIGATE COMMAND: navigate(page: "dispatch")
+
+DESCRIPTION:
+Real-time GPS tracking and job assignment command center.
+
+KEY FEATURES:
+- Live map showing all technicians
+- Job pins showing work locations
+- Tech sidebar with status/workload
+- Drag-and-drop job assignment
+- Auto-assign algorithm
+- Route optimization suggestions
+- Historical playback
+- Traffic overlay
+- ETA calculations
+
+WHAT USERS CAN DO:
+- Track tech locations in real-time
+- Assign jobs to technicians
+- Use auto-assign for optimal matching
+- View tech schedules and workload
+- See job details on map
+- Plan routes for efficiency
+
+--------------------------------------------------------------------------------
+PAGE: ANALYTICS
+--------------------------------------------------------------------------------
+URL: /analytics
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "analytics")
+
+DESCRIPTION:
+Business performance metrics and KPI dashboards.
+
+KEY FEATURES:
+- Revenue charts (daily, weekly, monthly)
+- Job completion metrics
+- Average job value
+- Customer satisfaction trends
+- Technician performance comparisons
+- Conversion rates
+- Date range filtering
+
+WHAT USERS CAN DO:
+- View revenue trends
+- Compare time periods
+- Track key metrics
+- Identify top performers
+- Spot business trends
+
+--------------------------------------------------------------------------------
+PAGE: REPORTS
+--------------------------------------------------------------------------------
+URL: /reports
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "reports")
+
+DESCRIPTION:
+Detailed business reports with export capabilities.
+
+KEY FEATURES:
+- Pre-built report templates
+- Revenue reports
+- Job summary reports
+- Technician performance reports
+- Customer analytics
+- Export to PDF/Excel
+- Scheduled report delivery
+
+WHAT USERS CAN DO:
+- Generate detailed reports
+- Export for accounting
+- Schedule automated reports
+- Analyze business data
+- Share with stakeholders
+
+--------------------------------------------------------------------------------
+PAGE: FINANCE
+--------------------------------------------------------------------------------
+URL: /finance
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "finance")
+
+DESCRIPTION:
+Financial overview including revenue, invoices, and payments.
+
+KEY FEATURES:
+- Revenue dashboard
+- Outstanding invoices list
+- Overdue invoice alerts
+- Payment history
+- Accounts receivable aging
+- Cash flow visualization
+
+WHAT USERS CAN DO:
+- View financial health
+- Track unpaid invoices
+- See payment history
+- Monitor cash flow
+- Identify collection needs
+
+--------------------------------------------------------------------------------
+PAGE: CAMPAIGNS
+--------------------------------------------------------------------------------
+URL: /campaigns
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "campaigns")
+
+DESCRIPTION:
+Email marketing campaign management.
+
+KEY FEATURES:
+- Campaign list with status
+- Create new campaigns
+- Select audience/segments
+- Schedule send times
+- Track open/click rates
+- View responses
+
+WHAT USERS CAN DO:
+- Create email campaigns
+- Target customer segments
+- Schedule delivery
+- Track performance
+- View responses
+
+--------------------------------------------------------------------------------
+PAGE: EMAIL TEMPLATES
+--------------------------------------------------------------------------------
+URL: /email-templates
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "email-templates")
+
+DESCRIPTION:
+Reusable email templates for campaigns and automation.
+
+KEY FEATURES:
+- Template library
+- Visual template editor
+- Variable insertion (customer name, etc.)
+- Preview before saving
+- Categories/organization
+
+WHAT USERS CAN DO:
+- Create email templates
+- Edit existing templates
+- Use variables for personalization
+- Organize by category
+
+--------------------------------------------------------------------------------
+PAGE: TAGS
+--------------------------------------------------------------------------------
+URL: /tags
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "tags")
+
+DESCRIPTION:
+Customer and job tagging system for organization.
+
+KEY FEATURES:
+- Tag list with colors
+- Create new tags
+- Edit tag properties
+- View tag usage counts
+- Delete unused tags
+
+WHAT USERS CAN DO:
+- Create custom tags
+- Set tag colors
+- Organize customers/jobs
+- Build segments for campaigns
+
+--------------------------------------------------------------------------------
+PAGE: SETTINGS
+--------------------------------------------------------------------------------
+URL: /settings
+ACCESS: Owner, Admin, Dispatcher
+NAVIGATE COMMAND: navigate(page: "settings")
+
+DESCRIPTION:
+Account and personal configuration.
+
+KEY FEATURES:
+- Company information
+- Business hours
+- User profile
+- Notification preferences
+- Password management
+
+WHAT USERS CAN DO:
+- Update company info
+- Change personal settings
+- Configure notifications
+- Update profile
+
+--------------------------------------------------------------------------------
+PAGE: INTEGRATIONS
+--------------------------------------------------------------------------------
+URL: /integrations
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "integrations")
+
+DESCRIPTION:
+Connect external services and apps.
+
+KEY FEATURES:
+- Gmail/Outlook connection
+- Google/Microsoft Calendar sync
+- Stripe payment setup
+- Connection status indicators
+- OAuth authorization flows
+
+WHAT USERS CAN DO:
+- Connect email accounts
+- Sync calendars
+- Set up payments
+- Manage integrations
+
+--------------------------------------------------------------------------------
+PAGE: USERS (Admin)
+--------------------------------------------------------------------------------
+URL: /admin/users
+ACCESS: Owner, Admin (limited)
+NAVIGATE COMMAND: navigate(page: "admin/users")
+
+DESCRIPTION:
+Team member management.
+
+KEY FEATURES:
+- User list with roles
+- Add new users (Owner only)
+- Edit user information
+- Assign roles
+- Deactivate users
+- Reset passwords
+
+WHAT USERS CAN DO:
+- View team members
+- Edit user profiles
+- Change roles
+- Manage access
+
+--------------------------------------------------------------------------------
+PAGE: AUTOMATION
+--------------------------------------------------------------------------------
+URL: /admin/automation
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "admin/automation")
+
+DESCRIPTION:
+Automation rules for triggers and actions.
+
+KEY FEATURES:
+- Rule list with status
+- Create new rules
+- Configure triggers (status change, time, keyword)
+- Configure actions (email, notification, update)
+- Enable/disable rules
+- View rule execution logs
+
+WHAT USERS CAN DO:
+- Create automation rules
+- Set up triggers
+- Define actions
+- Monitor rule execution
+
+--------------------------------------------------------------------------------
+PAGE: LLM PROVIDERS
+--------------------------------------------------------------------------------
+URL: /admin/llm-providers
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "admin/llm-providers")
+
+DESCRIPTION:
+AI model configuration.
+
+KEY FEATURES:
+- Provider list (OpenAI, Anthropic, Google)
+- API key management
+- Model selection by use case
+- Cost tracking
+- Rate limit settings
+
+WHAT USERS CAN DO:
+- Configure AI providers
+- Manage API keys
+- Choose models for tasks
+- Monitor AI costs
+
+--------------------------------------------------------------------------------
+PAGE: AUDIT LOG
+--------------------------------------------------------------------------------
+URL: /admin/audit
+ACCESS: Owner, Admin
+NAVIGATE COMMAND: navigate(page: "admin/audit")
+
+DESCRIPTION:
+System activity log for security and compliance.
+
+KEY FEATURES:
+- Chronological activity log
+- Filter by user
+- Filter by action type
+- Filter by date range
+- Export logs
+
+WHAT USERS CAN DO:
+- View all system activity
+- Track who did what
+- Investigate issues
+- Export for compliance
+
+================================================================================
+                      MOBILE PAGES
+================================================================================
+
+--------------------------------------------------------------------------------
+PAGE: TECH DASHBOARD
+--------------------------------------------------------------------------------
+URL: /m/tech/dashboard
+ACCESS: Tech only
+NAVIGATE COMMAND: navigate(page: "tech")
+
+DESCRIPTION:
+Tech's home screen showing today's jobs.
+
+KEY FEATURES:
+- Current/next job card
+- Today's job list
+- Big tap buttons (work glove friendly)
+- Voice button
+- Offline support
+
+WHAT USERS CAN DO:
+- See today's schedule
+- Start jobs
+- Navigate to job sites
+- Contact customers
+
+--------------------------------------------------------------------------------
+PAGE: TECH MAP
+--------------------------------------------------------------------------------
+URL: /m/tech/map
+ACCESS: Tech only
+NAVIGATE COMMAND: navigate(page: "tech/map")
+
+DESCRIPTION:
+Map view of tech's assigned jobs.
+
+KEY FEATURES:
+- Map with job pins
+- Tap pin for details
+- Navigation to Google Maps
+- Job status colors
+
+WHAT USERS CAN DO:
+- See job locations
+- Get driving directions
+- Plan route
+
+--------------------------------------------------------------------------------
+PAGE: TECH PROFILE
+--------------------------------------------------------------------------------
+URL: /m/tech/profile
+ACCESS: Tech only
+NAVIGATE COMMAND: navigate(page: "tech/profile")
+
+DESCRIPTION:
+Tech's performance statistics.
+
+KEY FEATURES:
+- Jobs completed count
+- Average rating
+- On-time percentage
+- Performance trends
+
+WHAT USERS CAN DO:
+- View their stats
+- Track performance
+
+--------------------------------------------------------------------------------
+PAGE: SALES DASHBOARD
+--------------------------------------------------------------------------------
+URL: /m/sales/dashboard
+ACCESS: Sales only
+NAVIGATE COMMAND: navigate(page: "sales")
+
+DESCRIPTION:
+Sales rep's home screen with meetings and quick actions.
+
+KEY FEATURES:
+- Next meeting card
+- Today's meetings list
+- Quick action buttons
+- Voice note recording
+
+WHAT USERS CAN DO:
+- See meeting schedule
+- Start meetings
+- Record notes
+- Access briefings
+
+--------------------------------------------------------------------------------
+PAGE: SALES LEADS
+--------------------------------------------------------------------------------
+URL: /m/sales/leads
+ACCESS: Sales only
+NAVIGATE COMMAND: navigate(page: "sales/leads")
+
+DESCRIPTION:
+Lead pipeline management.
+
+KEY FEATURES:
+- Leads by temperature (hot/warm/cold)
+- Deal values
+- Days since contact
+- Status filters
+
+WHAT USERS CAN DO:
+- View lead pipeline
+- Update lead status
+- Add notes
+- Schedule follow-ups
+
+--------------------------------------------------------------------------------
+PAGE: SALES PROFILE
+--------------------------------------------------------------------------------
+URL: /m/sales/profile
+ACCESS: Sales only
+NAVIGATE COMMAND: navigate(page: "sales/profile")
+
+DESCRIPTION:
+Sales rep's performance statistics.
+
+KEY FEATURES:
+- Deals won
+- Revenue generated
+- Conversion rate
+- Performance ranking
+
+WHAT USERS CAN DO:
+- View their stats
+- Track performance
+
+--------------------------------------------------------------------------------
+PAGE: OWNER MOBILE DASHBOARD
+--------------------------------------------------------------------------------
+URL: /m/owner/dashboard
+ACCESS: Owner only
+NAVIGATE COMMAND: navigate(page: "owner")
+
+DESCRIPTION:
+Executive overview for owners on mobile.
+
+KEY FEATURES:
+- Today's revenue
+- Weekly/monthly revenue
+- Job progress
+- Team status
+- Quick links
+
+WHAT USERS CAN DO:
+- View business health
+- Check team status
+- Access reports
+
+--------------------------------------------------------------------------------
+PAGE: OFFICE DASHBOARD
+--------------------------------------------------------------------------------
+URL: /m/office/dashboard
+ACCESS: Dispatcher
+NAVIGATE COMMAND: navigate(page: "office")
+
+DESCRIPTION:
+Mobile dashboard for office/dispatch staff.
+
+KEY FEATURES:
+- Escalation queue
+- Jobs today count
+- Quick actions
+- Customer clearance handling
+
+WHAT USERS CAN DO:
+- Handle escalations
+- Manage clearances
+- Quick contact actions
+
+================================================================================

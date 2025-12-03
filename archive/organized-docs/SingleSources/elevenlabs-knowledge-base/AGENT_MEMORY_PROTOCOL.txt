@@ -1,0 +1,266 @@
+================================================================================
+                    72-HOUR MEMORY PROTOCOL
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+The agent has a 72-hour memory window that persists across calls. This allows
+for seamless conversation continuity if calls drop or users call back.
+
+================================================================================
+                         WHY THIS MATTERS
+================================================================================
+
+SCENARIO WITHOUT MEMORY:
+  Call 1: User starts creating job, provides address, phone disconnects
+  Call 2: User calls back, agent has no idea what happened
+  User must repeat everything -> Frustrated user
+
+SCENARIO WITH MEMORY:
+  Call 1: User starts creating job, provides address, you save checkpoint
+  Call 2: User calls back, you read memory
+  Agent: "Welcome back! I see we were setting up a job at 123 Main Street.
+         Want to continue from where we left off?"
+  User: "Yes please!" -> Happy user
+
+================================================================================
+                     THE THREE-STEP PROTOCOL
+================================================================================
+
+--------------------------------------------------------------------------------
+STEP 1: THE HANDSHAKE (Call Start)
+--------------------------------------------------------------------------------
+
+AT THE START OF EVERY CONVERSATION:
+
+1. Get the caller's phone number (usually provided by system)
+
+2. Execute: read_agent_memory(phoneNumber)
+
+3. Check the result and respond accordingly:
+
+IF NO MEMORY FOUND:
+  { found: false }
+  -> Proceed with standard greeting
+  -> Treat as new caller
+
+IF MEMORY FOUND WITH intent="in_progress":
+  { found: true, summary: "User needs heater fixed at 123 Main", intent: "in_progress" }
+  -> Say: "Welcome back! I see we were discussing [summary]. Would you like
+           to continue where we left off?"
+  -> Wait for user confirmation
+  -> Resume the previous workflow
+
+IF MEMORY FOUND WITH intent="completed":
+  { found: true, summary: "Job created for plumbing repair", intent: "completed" }
+  -> Treat as NEW caller (don't mention previous job)
+  -> The previous interaction is complete, start fresh
+
+--------------------------------------------------------------------------------
+STEP 2: THE CHECKPOINT (During Call)
+--------------------------------------------------------------------------------
+
+SAVE PROGRESS WHENEVER USER PROVIDES KEY INFORMATION:
+
+Trigger moments:
+  - User provides their name
+  - User provides an address
+  - User describes the issue/work needed
+  - User provides a phone number
+  - User confirms a date/time
+  - You create a contact
+  - You find a matching contact
+  - Any significant step forward
+
+Execute:
+  update_agent_memory(
+    phoneNumber: "555-123-4567",
+    summary: "Creating job for John Smith at 123 Main St, needs water heater repair",
+    intent: "in_progress",
+    stagingData: '{"contactId": "uuid-123", "address": "123 Main St", "issue": "water heater"}'
+  )
+
+WHY: If the call drops 1 second after they give you this info, you need to
+know it when they call back.
+
+CHECKPOINT FREQUENCY:
+  - After every major piece of information
+  - Better to save too often than not enough
+  - Updates overwrite previous saves (that's fine)
+
+--------------------------------------------------------------------------------
+STEP 3: THE CLEARING (Completion)
+--------------------------------------------------------------------------------
+
+WHEN THE JOB/TASK IS SUCCESSFULLY COMPLETED:
+
+Execute:
+  update_agent_memory(
+    phoneNumber: "555-123-4567",
+    summary: "Job created for John Smith - water heater repair at 123 Main St",
+    intent: "completed"
+  )
+
+WHY: This marks the interaction as complete. Next time this number calls,
+you'll treat them as a new caller rather than trying to resume.
+
+WHAT COUNTS AS "COMPLETED":
+  - Job successfully created (create_job returned success)
+  - Contact created and user confirms they're done
+  - User explicitly says "that's all I needed"
+  - Task the user called about is finished
+
+================================================================================
+                       SUMMARY WRITING TIPS
+================================================================================
+
+Good summaries are:
+  - One sentence
+  - Specific about what's happening
+  - Include key details (name, address, issue)
+
+GOOD SUMMARIES:
+  - "Creating job for John Smith at 123 Main St for water heater repair"
+  - "Looking up contact Alice Cooper, found uuid-123"
+  - "Scheduling appointment for Tuesday 10am, leak repair"
+  - "User asked about their jobs for today, 3 jobs listed"
+
+BAD SUMMARIES:
+  - "Talking to user" (too vague)
+  - "Job stuff" (no detail)
+  - "The user wants to do something with a job at an address" (not specific)
+
+================================================================================
+                       STAGING DATA FORMAT
+================================================================================
+
+stagingData is an OPTIONAL JSON string for structured data you've collected.
+
+EXAMPLE:
+{
+  "contactId": "uuid-123",
+  "contactName": "John Smith",
+  "address": "123 Main Street, Springfield",
+  "phone": "555-1234",
+  "issue": "Water heater not heating",
+  "scheduledDate": "2025-01-20",
+  "scheduledTime": "10:00 AM"
+}
+
+When you read memory, you can parse stagingData to restore the full context.
+
+================================================================================
+                    CONVERSATION FLOW EXAMPLES
+================================================================================
+
+--------------------------------------------------------------------------------
+EXAMPLE 1: Fresh Caller
+--------------------------------------------------------------------------------
+
+[Call starts]
+You: [Execute read_agent_memory("555-1234")]
+Result: { found: false }
+
+You: "Hi, this is the CRM AI assistant. How can I help you today?"
+User: "I need to schedule a plumber"
+You: "I'd be happy to help with that. What's the issue you're experiencing?"
+User: "My water heater isn't heating"
+
+You: [Execute update_agent_memory("555-1234", "User needs water heater repair", "in_progress")]
+
+You: "Water heater not heating, got it. What's your name?"
+User: "John Smith"
+
+You: [Execute update_agent_memory("555-1234", "John Smith needs water heater repair", "in_progress")]
+
+[Continue conversation...]
+
+--------------------------------------------------------------------------------
+EXAMPLE 2: Returning Caller (In Progress)
+--------------------------------------------------------------------------------
+
+[Call starts]
+You: [Execute read_agent_memory("555-1234")]
+Result: {
+  found: true,
+  summary: "John Smith needs water heater repair at 123 Main St",
+  intent: "in_progress",
+  stagingData: '{"contactId": "uuid-123", "address": "123 Main St"}'
+}
+
+You: "Welcome back, John! I see we were setting up a job for water heater
+     repair at 123 Main Street. Would you like to continue from there?"
+User: "Yes please"
+You: "Great! I have your address. When would you like us to come out?"
+User: "Tomorrow morning"
+
+[Continue to complete the job creation]
+
+You: [Execute create_job(contactId: "uuid-123", description: "Water heater repair", ...)]
+You: [Execute update_agent_memory("555-1234", "Job created for John Smith - water heater", "completed")]
+
+You: "Perfect! I've scheduled your water heater repair for tomorrow morning.
+     A technician will be there between 9 and 11 AM. Is there anything else?"
+
+--------------------------------------------------------------------------------
+EXAMPLE 3: Returning Caller (Completed)
+--------------------------------------------------------------------------------
+
+[Call starts]
+You: [Execute read_agent_memory("555-1234")]
+Result: {
+  found: true,
+  summary: "Job created for John Smith - water heater repair",
+  intent: "completed"
+}
+
+[Because intent is "completed", treat as fresh call]
+
+You: "Hi, this is the CRM AI assistant. How can I help you today?"
+User: "I want to schedule another job"
+You: "I'd be happy to help. What service do you need?"
+
+[Start fresh workflow]
+
+================================================================================
+                         EDGE CASES
+================================================================================
+
+CALL DROPS IMMEDIATELY:
+- No time to save -> User calls back -> Start fresh
+- This is fine, they'll just repeat the info
+
+USER PROVIDES WRONG INFO THEN CORRECTS:
+- Update memory with CORRECT info
+- Latest save overwrites previous
+- "Actually, my address is 456 Oak, not 123 Main"
+- [Save with 456 Oak]
+
+MULTIPLE INCOMPLETE CALLS:
+- Each checkpoint updates the memory
+- When they finally complete, mark "completed"
+- System handles gracefully
+
+USER SAYS "START OVER":
+- Execute update_agent_memory with intent="completed"
+- Begin fresh workflow
+- "No problem! Let's start fresh. What can I help you with?"
+
+DIFFERENT PHONE NUMBER, SAME PERSON:
+- Memory is by phone number
+- Different number = different memory
+- This is expected behavior
+
+================================================================================
+                      KEY REMINDERS
+================================================================================
+
+1. ALWAYS read memory at call start
+2. SAVE frequently during call (after each key piece of info)
+3. Mark "completed" when task is done
+4. Summaries should be specific and one sentence
+5. Use stagingData for structured data you'll need later
+6. intent="in_progress" means resume, intent="completed" means start fresh
+
+================================================================================

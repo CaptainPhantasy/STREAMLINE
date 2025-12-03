@@ -1,0 +1,298 @@
+================================================================================
+                    JOB LIFECYCLE REFERENCE
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+Jobs are the core business object. Understanding the lifecycle helps you
+guide users and execute the right actions at the right time.
+
+================================================================================
+                       STATUS PROGRESSION
+================================================================================
+
+Jobs move through 7 statuses in order:
+
+  lead → scheduled → en_route → in_progress → completed → invoiced → paid
+
+Visual flow:
+
+  ┌──────┐    ┌───────────┐    ┌──────────┐    ┌─────────────┐
+  │ LEAD │ -> │ SCHEDULED │ -> │ EN_ROUTE │ -> │ IN_PROGRESS │
+  └──────┘    └───────────┘    └──────────┘    └─────────────┘
+                                                      │
+                                                      ▼
+  ┌──────┐    ┌──────────┐    ┌───────────┐
+  │ PAID │ <- │ INVOICED │ <- │ COMPLETED │
+  └──────┘    └──────────┘    └───────────┘
+
+================================================================================
+                      STATUS DEFINITIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+STATUS: lead
+--------------------------------------------------------------------------------
+MEANING: Initial inquiry or potential work. Not yet scheduled.
+
+TRIGGER:
+  - Customer calls asking about service
+  - Email inquiry received
+  - Campaign generates interest
+  - Website form submission
+
+WHAT USER MIGHT SAY:
+  - "Create a lead for..."
+  - "I got a call from someone interested in..."
+  - "New potential job..."
+
+NEXT VALID STATES:
+  - scheduled (when date/time assigned)
+  - (can be closed/deleted if customer declines)
+
+--------------------------------------------------------------------------------
+STATUS: scheduled
+--------------------------------------------------------------------------------
+MEANING: Job has confirmed date, time, and usually a technician assigned.
+
+TRIGGER:
+  - Office schedules the appointment
+  - Dispatcher assigns a date/time
+  - Customer confirms availability
+
+WHAT USER MIGHT SAY:
+  - "Schedule this for tomorrow"
+  - "Put this on Mike's calendar for Tuesday"
+  - "Book the appointment"
+
+NEXT VALID STATES:
+  - en_route (when tech starts traveling)
+  - lead (if customer reschedules/cancels)
+
+--------------------------------------------------------------------------------
+STATUS: en_route
+--------------------------------------------------------------------------------
+MEANING: Technician is traveling to the job site.
+
+TRIGGER:
+  - Tech taps "I've Arrived" button (GPS logged)
+  - Dispatcher marks tech as en route
+  - Automatic GPS detection near job site
+
+WHAT USER MIGHT SAY:
+  - "Mark Mike as on the way"
+  - "Tech is heading out"
+  - (Often automatic from mobile app)
+
+NEXT VALID STATES:
+  - in_progress (when work starts)
+  - scheduled (if tech turns back)
+
+--------------------------------------------------------------------------------
+STATUS: in_progress
+--------------------------------------------------------------------------------
+MEANING: Technician is actively working on the job.
+
+TRIGGER:
+  - Tech confirms work has started
+  - Photos taken, work begun
+
+WHAT USER MIGHT SAY:
+  - "Mark this as in progress"
+  - "Tech is working on it now"
+
+NEXT VALID STATES:
+  - completed (when 7-gate workflow finished)
+  - en_route (if tech leaves temporarily)
+
+--------------------------------------------------------------------------------
+STATUS: completed
+--------------------------------------------------------------------------------
+MEANING: Work is finished, signature captured, ready for invoicing.
+
+TRIGGER:
+  - Tech completes 7-gate workflow
+  - Final signature obtained
+  - GPS departure logged
+
+WHAT USER MIGHT SAY:
+  - "Mark job as done"
+  - "Work is complete"
+  - "Job finished"
+
+NEXT VALID STATES:
+  - invoiced (when invoice generated and sent)
+  - in_progress (if additional work needed)
+
+--------------------------------------------------------------------------------
+STATUS: invoiced
+--------------------------------------------------------------------------------
+MEANING: Invoice has been generated and sent to customer.
+
+TRIGGER:
+  - Office generates invoice from job
+  - Invoice emailed to customer
+
+WHAT USER MIGHT SAY:
+  - "Send the invoice"
+  - "Bill the customer"
+  - "Generate invoice for this job"
+
+NEXT VALID STATES:
+  - paid (when payment received)
+  - completed (if invoice voided)
+
+--------------------------------------------------------------------------------
+STATUS: paid
+--------------------------------------------------------------------------------
+MEANING: Payment received. Job is complete. (Terminal state)
+
+TRIGGER:
+  - Payment processed
+  - Stripe webhook confirms payment
+  - Manual payment recorded
+
+WHAT USER MIGHT SAY:
+  - "Mark as paid"
+  - "Payment received"
+  - "Customer paid"
+
+NEXT VALID STATES:
+  - None (terminal state)
+
+================================================================================
+                      STATUS CHANGE TOOL
+================================================================================
+
+Use update_job_status to change status:
+
+update_job_status(
+  jobId: "uuid-123",
+  status: "completed"  // Must be exact string from list above
+)
+
+VALID STATUS VALUES:
+  - "lead"
+  - "scheduled"
+  - "en_route"
+  - "in_progress"
+  - "completed"
+  - "invoiced"
+  - "paid"
+
+================================================================================
+                    COMMON STATUS REQUESTS
+================================================================================
+
+USER SAYS                          | STATUS TO SET
+-----------------------------------|------------------
+"Mark as done/finished/complete"   | completed
+"Job is done"                      | completed
+"Tech finished"                    | completed
+"Work is complete"                 | completed
+"Mark as paid"                     | paid
+"Payment received"                 | paid
+"Customer paid"                    | paid
+"Schedule for tomorrow"            | scheduled
+"Book the appointment"             | scheduled
+"Tech is on the way"               | en_route
+"Tech heading out"                 | en_route
+"Work started"                     | in_progress
+"Tech is working on it"            | in_progress
+"Send invoice"                     | invoiced (after generate)
+"Bill them"                        | invoiced (after generate)
+
+================================================================================
+                     JOB CREATION TRIGGERS
+================================================================================
+
+Jobs can be created from:
+
+1. MANUAL CREATION
+   - User tells you to create a job
+   - Office staff creates from call
+   - Dispatcher creates for customer
+
+2. EMAIL PARSING
+   - AI extracts job details from customer email
+   - Auto-creates lead in system
+
+3. VOICE COMMAND (You!)
+   - User says "Create a job for John Smith"
+   - You execute create_job tool
+
+4. CAMPAIGN RESPONSE
+   - Customer responds to marketing
+   - Converts to lead automatically
+
+5. ESTIMATE ACCEPTANCE
+   - Customer approves estimate
+   - Estimate converts to job
+
+6. RECURRING SERVICE
+   - Scheduled maintenance triggers new job
+   - Annual/monthly service auto-created
+
+================================================================================
+                   WORKFLOW TRANSITIONS
+================================================================================
+
+TYPICAL RESIDENTIAL FLOW:
+  Customer calls → lead
+  Appointment set → scheduled
+  Tech leaves office → en_route
+  Tech arrives, starts work → in_progress
+  Work done, signature captured → completed
+  Office sends bill → invoiced
+  Customer pays → paid
+
+EMERGENCY FLOW:
+  Emergency call → scheduled (immediate)
+  Tech dispatched → en_route
+  Work done → completed
+  Same-day invoice → invoiced
+  On-site payment → paid
+
+ESTIMATE FLOW:
+  Customer wants quote → estimate created
+  Estimate sent and accepted → lead (or scheduled)
+  [Continue normal flow]
+
+================================================================================
+                      AUTOMATED TRIGGERS
+================================================================================
+
+These events can trigger automation rules:
+
+STATUS CHANGE EVENTS:
+  - job_status_to_scheduled → Send confirmation email
+  - job_status_to_en_route → Send "tech on way" SMS
+  - job_status_to_completed → Send thank you + review request
+  - job_status_to_invoiced → Start payment reminder sequence
+  - job_status_to_paid → Send receipt, update financials
+
+You don't need to manage these - they happen automatically based on
+automation rules configured by the owner.
+
+================================================================================
+                      EXAMPLE DIALOGUES
+================================================================================
+
+USER: "Mark this job as complete"
+YOU: [Execute update_job_status(jobId: "current-job-id", status: "completed")]
+YOU: "Done! The job is now marked as completed. Would you like me to generate
+     an invoice?"
+
+USER: "The tech is heading to the Johnson job"
+YOU: [Search for Johnson job to get ID]
+YOU: [Execute update_job_status(jobId: "johnson-job-id", status: "en_route")]
+YOU: "Got it, I've marked the Johnson job as en route. The customer will
+     get a notification that the tech is on the way."
+
+USER: "John Smith paid his bill"
+YOU: [Search for John Smith's job]
+YOU: [Execute update_job_status(jobId: "smith-job-id", status: "paid")]
+YOU: "I've marked John Smith's job as paid. The invoice is now closed."
+
+================================================================================

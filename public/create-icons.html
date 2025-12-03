@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRM-AI PRO Icon Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #111; color: #fff; }
+    canvas { border: 2px solid #F97316; margin: 10px; }
+    a { display: block; margin: 10px; color: #F97316; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>CRM-AI PRO PWA Icon Generator</h1>
+  <p>Click the links below to download the icons:</p>
+
+  <canvas id="canvas192" width="192" height="192"></canvas>
+  <canvas id="canvas512" width="512" height="512"></canvas>
+
+  <div id="links"></div>
+
+  <script>
+    function createIcon(canvasId, size) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#1F2937');
+      gradient.addColorStop(1, '#111827');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+
+      // Orange accent border
+      ctx.strokeStyle = '#F97316';
+      ctx.lineWidth = size * 0.05;
+      ctx.strokeRect(size * 0.05, size * 0.05, size * 0.9, size * 0.9);
+
+      // Text "CRM-AI"
+      ctx.fillStyle = '#F97316';
+      ctx.font = 'bold ' + (size * 0.15) + 'px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('CRM-AI', size/2, size/2.5);
+
+      // Text "PRO"
+      ctx.font = 'bold ' + (size * 0.12) + 'px Arial';
+      ctx.fillText('PRO', size/2, size/1.6);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = 'icon-' + size + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.textContent = 'Download icon-' + size + '.png (' + size + 'x' + size + ')';
+      document.getElementById('links').appendChild(link);
+    }
+
+    createIcon('canvas192', 192);
+    createIcon('canvas512', 512);
+  </script>
+</body>
+</html>

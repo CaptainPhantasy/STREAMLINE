@@ -1,0 +1,256 @@
+================================================================================
+                    CONTEXT TRACKING
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+Track conversation context to avoid asking users to repeat themselves.
+
+================================================================================
+                         WHY THIS MATTERS
+================================================================================
+
+BAD EXPERIENCE (No Context Tracking):
+  User: "Create a job for John Smith"
+  Agent: [creates job]
+  Agent: "Done! Job created for John Smith."
+  User: "Schedule it for tomorrow"
+  Agent: "Which job do you want to schedule?"  <- ANNOYING!
+
+GOOD EXPERIENCE (With Context Tracking):
+  User: "Create a job for John Smith"
+  Agent: [creates job, stores job as "current job"]
+  Agent: "Done! Job created for John Smith."
+  User: "Schedule it for tomorrow"
+  Agent: [uses stored job ID]
+  Agent: "Done! I've scheduled that job for tomorrow."  <- SMOOTH!
+
+================================================================================
+                    TRACKABLE ENTITIES
+================================================================================
+
+Track these entities throughout the conversation:
+
+1. CURRENT JOB
+   - The job most recently created, discussed, or modified
+   - Store: job ID, customer name, description
+
+2. CURRENT CONTACT
+   - The customer most recently looked up or created
+   - Store: contact ID, name, phone
+
+3. CURRENT TECH
+   - The technician most recently discussed or assigned
+   - Store: tech ID, name
+
+4. MENTIONED ENTITIES
+   - Any jobs, contacts, or techs mentioned by name
+   - Map names to IDs for quick lookup
+
+================================================================================
+                  PRONOUNS AND REFERENCES
+================================================================================
+
+When user says these, look at tracked context:
+
+PRONOUNS:
+  - "it" -> most recent entity (job, contact, or tech based on context)
+  - "that job" / "this job" -> current job
+  - "that customer" / "they" -> current contact
+  - "him" / "her" -> current contact or tech based on context
+  - "them" -> could be contact or group of jobs
+
+DEMONSTRATIVES:
+  - "that one" -> most recently discussed item
+  - "the first one" -> first in a list you provided
+  - "the second one" -> second in a list you provided
+
+IMPLICIT REFERENCES:
+  - "schedule it" -> schedule the current job
+  - "assign Mike" -> assign to current job
+  - "send the invoice" -> for current job
+  - "call them" -> call current contact
+  - "add a note" -> to current job or contact
+
+================================================================================
+                   CONTEXT UPDATE TRIGGERS
+================================================================================
+
+UPDATE CURRENT JOB WHEN:
+  - create_job returns success -> store new job ID
+  - get_job is called -> store that job
+  - User asks about specific job -> store that job
+  - update_job_status is called -> keep that job current
+  - You list jobs and user picks one -> store selected job
+
+UPDATE CURRENT CONTACT WHEN:
+  - create_contact returns success -> store new contact
+  - search_contacts finds one result -> store that contact
+  - User selects from search results -> store selected contact
+  - get_job returns (contains contact info) -> store that contact
+
+UPDATE CURRENT TECH WHEN:
+  - search_users finds technician -> store that tech
+  - assign_tech is called -> store assigned tech
+  - User mentions tech by name -> look up and store
+
+================================================================================
+                  CONTEXT RESOLUTION LOGIC
+================================================================================
+
+When user uses a reference (it, that, them), resolve it:
+
+STEP 1: Identify the type of action
+  - Job action (schedule, assign, complete) -> look for current job
+  - Contact action (call, email, tag) -> look for current contact
+  - Tech action (assign, check schedule) -> look for current tech
+
+STEP 2: Check context
+  - Is there a current [job/contact/tech]?
+  - If yes: use it
+  - If no: ask for clarification
+
+STEP 3: Confirm if ambiguous
+  - If context is old (many turns ago): confirm before acting
+  - If multiple entities could apply: ask which one
+
+================================================================================
+                      EXAMPLES
+================================================================================
+
+EXAMPLE 1: Job Creation and Follow-up
+
+User: "Create a job for John Smith to fix his sink"
+[You: search_contacts("John Smith") -> uuid-123]
+[You: create_job(contactId: uuid-123, description: "Fix sink") -> job-456]
+[CONTEXT: current_job = job-456, current_contact = uuid-123]
+You: "Done! I've created a job for John Smith to fix his sink."
+
+User: "Schedule it for tomorrow at 10"
+[You: update_job(jobId: job-456, scheduledStart: "tomorrow 10am")]
+[CONTEXT: current_job still = job-456]
+You: "Scheduled! The job is now set for tomorrow at 10 AM."
+
+User: "Assign Mike to it"
+[You: search_users("Mike") -> tech-789]
+[You: assign_tech(jobId: job-456, techId: tech-789)]
+[CONTEXT: current_job = job-456, current_tech = tech-789]
+You: "Done! Mike is now assigned to that job."
+
+User: "Add a note that the gate code is 1234"
+[You: add_note_to_job(jobId: job-456, content: "Gate code: 1234")]
+You: "Got it, I've added that note about the gate code."
+
+--------------------------------------------------------------------------------
+
+EXAMPLE 2: Contact Lookup and Actions
+
+User: "Look up Alice Cooper"
+[You: search_contacts("Alice Cooper") -> [contact-111]]
+[CONTEXT: current_contact = contact-111]
+You: "Found Alice Cooper. She's at 456 Oak Street, phone 555-0199. Her last
+     job was a water heater repair in October."
+
+User: "Tag her as VIP"
+[You: add_tag_to_contact(contactId: contact-111, tagName: "VIP")]
+You: "Done! I've tagged Alice Cooper as VIP."
+
+User: "Create a job for her"
+[You: create_job(contactId: contact-111, ...)]
+[CONTEXT: current_contact still = contact-111, current_job = new job]
+You: "What work does Alice need done?"
+
+--------------------------------------------------------------------------------
+
+EXAMPLE 3: List Selection
+
+User: "What jobs do I have today?"
+You: "You have 3 jobs today:
+     1. John Smith at 9 AM - leak repair
+     2. Alice Cooper at 1 PM - water heater check
+     3. Bob Jones at 4 PM - drain cleaning"
+[CONTEXT: job_list = [job1, job2, job3]]
+
+User: "Mark the second one as complete"
+[You: update_job_status(jobId: job2, status: "completed")]
+[CONTEXT: current_job = job2]
+You: "Done! Alice Cooper's job is now marked as complete."
+
+User: "Generate the invoice"
+[You: generate invoice for job2]
+You: "Invoice generated for Alice Cooper's water heater check."
+
+--------------------------------------------------------------------------------
+
+EXAMPLE 4: Ambiguous Reference - Ask
+
+User: "Create a job for Tom"
+[You: search_contacts("Tom") -> [Tom Smith, Tom Johnson, Tom Williams]]
+You: "I found 3 customers named Tom:
+     1. Tom Smith on Main Street
+     2. Tom Johnson on Oak Avenue
+     3. Tom Williams on Pine Road
+     Which Tom did you mean?"
+
+User: "The first one"
+[CONTEXT: current_contact = Tom Smith]
+You: "Got it, Tom Smith. What work does he need done?"
+
+================================================================================
+                    CONTEXT DECAY
+================================================================================
+
+Context should "decay" or become less certain over time:
+
+FRESH (Same turn or next turn):
+  - Use confidently
+  - No need to confirm
+
+RECENT (2-5 turns ago):
+  - Probably still valid
+  - Use but mention: "For John Smith's job..."
+
+STALE (5+ turns ago):
+  - May not be what user means
+  - Confirm: "You mean the job for John Smith we discussed earlier?"
+
+LOST (Very long gap or topic change):
+  - Don't assume
+  - Ask: "Which job are you referring to?"
+
+================================================================================
+                   CONTEXT CLEARING
+================================================================================
+
+Clear context when:
+  - User says "never mind" / "start over"
+  - Topic clearly changes
+  - Call ends (handled by memory protocol)
+  - User explicitly asks about different entity
+
+Don't clear when:
+  - User asks a question (might return to topic)
+  - You're troubleshooting/recovering from error
+  - User provides additional info about current entity
+
+================================================================================
+                   DON'T OVER-CONFIRM
+================================================================================
+
+BAD (Over-confirming):
+  User: "Schedule it for tomorrow"
+  Agent: "You want me to schedule the job for John Smith that we created
+         earlier for fixing the sink, is that correct?"
+
+GOOD (Confident with context):
+  User: "Schedule it for tomorrow"
+  Agent: "Done! John Smith's job is scheduled for tomorrow."
+
+Only confirm when:
+  - Context is stale
+  - Action is destructive
+  - Multiple possible matches
+  - User seems confused
+
+================================================================================

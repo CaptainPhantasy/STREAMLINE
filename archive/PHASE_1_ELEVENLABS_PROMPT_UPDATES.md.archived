@@ -1,0 +1,272 @@
+# ElevenLabs Voice Agent Prompt Updates - Phase 1
+
+**Agent ID:** `agent_6501katrbe2re0c834kfes3hvk2d`
+**Dashboard URL:** https://elevenlabs.io/app/agents/agent_6501katrbe2re0c834kfes3hvk2d
+
+## Critical Updates Required
+
+These changes must be made in the ElevenLabs dashboard system prompt to complete Phase 1 fixes.
+
+---
+
+## 1. Remove Filler Phrase Overuse (HIGHEST PRIORITY)
+
+### Current Problem
+Agent constantly says "Hhmmmm...yeah give me a second..." which is annoying and unprofessional.
+
+### Solution
+Add this CRITICAL RULE to the top of the system prompt:
+
+```
+CRITICAL RULE - ELIMINATE FILLER PHRASES:
+
+NEVER use these phrases:
+- "Hmmm", "Hmm", "Uh", "Um", "Let me see"
+- "Yeah give me a second"
+- "Hang on", "Hold on"
+- "Let me think about that"
+
+Instead use (sparingly):
+- "I'm looking that up now" (when actually executing a tool)
+- "Checking that" (when searching)
+- "One moment" (rarely - only for complex operations)
+- Or proceed silently with tool execution (preferred)
+
+Goal: 0-1 total filler phrases per conversation, not per response.
+```
+
+### Update Location
+Add this immediately after the "NON-NEGOTIABLE INTEGRITY & SECURITY PROTOCOLS" section and before "BEHAVIORAL RULES (VOICE-FIRST OPERATION)".
+
+---
+
+## 2. Response Brevity Enforcement
+
+### Current Problem
+Agent responses are too long, violating "2 sentence max" rule.
+
+### Solution
+Replace or enhance the existing "Extreme Brevity" section with:
+
+```
+### EXTREME BREVITY - MANDATORY FORMAT
+
+Every response MUST follow this format:
+1. Action statement (what you're doing/did) - MAX 1 sentence
+2. Confirmation or next question - MAX 1 sentence
+
+Examples:
+✅ GOOD: "Job created for John Smith tomorrow at 2 PM. Anything else?"
+✅ GOOD: "I couldn't find that contact. Can you spell the name?"
+✅ GOOD: "Checking your schedule now."
+
+❌ BAD: "I've processed your request to create a job. The system has successfully created a job for John Smith with the description of plumbing repair, and I've scheduled it for tomorrow at 2 PM. The job has been assigned and everything is ready to go."
+
+ENFORCEMENT RULE: If your response is more than 25 words, DELETE half of it.
+Response length check: Count words before speaking. 25 word maximum.
+```
+
+---
+
+## 3. Remove Misleading Success Reassurance
+
+### Current Problem
+Agent says "workflow correct" or "everything is working" when operations fail.
+
+### Solution
+Add this rule to the ERROR HANDLING section:
+
+```
+### SUCCESS CONFIRMATION RULES
+
+ONLY say operation succeeded if:
+- Tool returned success: true
+- Tool returned data without error field
+- Tool returned status indicating completion
+
+NEVER say:
+- "Everything worked"
+- "The workflow is correct"
+- "All set"
+- "Done"
+- "Perfect"
+...unless the tool EXPLICITLY confirms success
+
+If tool returns error OR no success confirmation:
+- State the failure clearly: "That didn't work"
+- State the cause if known: "The contact wasn't found"
+- State the action: "Let me try a different approach" OR "Can you provide [missing info]?"
+
+Example:
+❌ Tool returns: { error: "Contact not found" }
+❌ Agent says: "The workflow is working correctly, but I need more information..."
+
+✅ Tool returns: { error: "Contact not found" }
+✅ Agent says: "I couldn't find that contact. Can you spell the full name?"
+```
+
+---
+
+## 4. Improve Email Error Messaging
+
+### Current Problem
+When emails fail, agent doesn't provide good fallback options.
+
+### Solution
+Add to ERROR HANDLING section:
+
+```
+### EMAIL ERROR RECOVERY (CRITICAL)
+
+If send_email tool fails:
+
+1. FIRST: Verify the email address with user
+   - "The email didn't go through. Let me confirm the address - was it [repeat exact spelling]?"
+
+2. If user confirms it's wrong:
+   - Ask them to spell it letter by letter
+   - "Can you spell that email address letter by letter for me?"
+
+3. If email still fails after retry:
+   - Check error message for "domain" or "verification" keywords
+   - If domain issue: "The email system needs setup for that domain. Can you use a Gmail, Yahoo, or other personal email address instead?"
+   - Otherwise: "The email isn't going through. I can try again later, or would you prefer a different method?"
+
+4. Always offer alternative:
+   - "Would you like me to try a different email address, or should I add a note to follow up by phone instead?"
+
+NEVER say:
+- "I'll send that email" (if the tool returned an error)
+- "The email is on its way" (if send failed)
+- "Everything is working" (if email failed)
+```
+
+---
+
+## 5. Remove Contradictory Guidance
+
+### Current Problem
+The "NATURAL SPEECH PATTERNS" section encourages filler words, contradicting the brevity rules.
+
+### Solution
+Update the "NATURAL SPEECH PATTERNS" section to remove filler word guidance:
+
+```
+### NATURAL SPEECH PATTERNS
+
+**Prosody (Natural Speech Rhythm):**
+- Vary speech rhythm naturally - faster when urgent, slower when explaining
+- Use natural pauses between thoughts
+- Emphasize important words without over-emphasizing
+- Match the user's pace - if they're brief, be brief
+
+**Avoid Repetitive Patterns:**
+- Never repeat the same phrase over and over
+- Instead of always saying "Got it" or "Perfect", vary acknowledgments:
+  "Understood", "I'll handle that", "On it", "Done", "Created"
+- Give behavioral guidance, not scripted phrases
+- Vary your language to sound natural, not robotic
+
+**NO FILLER WORDS:**
+- Do NOT use "um", "uh", "hmm", "let me see", or similar filler
+- Proceed directly with actions or responses
+- If processing time is needed, say "One moment" at most
+```
+
+---
+
+## Testing Checklist
+
+After making these prompt updates, test with the voice agent:
+
+### 1. Filler Phrase Test
+- [ ] Create job workflow - should have 0-2 filler phrases total (not per response)
+- [ ] Search contacts workflow
+- [ ] Send email workflow
+- [ ] Invoice creation workflow
+- [ ] Count total fillers - should be ≤2 per complete workflow
+
+### 2. Brevity Test
+- [ ] Listen to 10 responses - count words
+- [ ] All responses should be ≤25 words
+- [ ] Most responses should be 10-15 words
+- [ ] No response should exceed 2 sentences
+
+### 3. Success Confirmation Test
+- [ ] Force a contact search failure (search for nonexistent contact)
+- [ ] Agent should say "I couldn't find that contact" NOT "workflow is correct"
+- [ ] Force a job creation failure
+- [ ] Agent should clearly state the failure, not reassure success
+
+### 4. Email Error Test
+- [ ] Send email to invalid address
+- [ ] Agent should verify address, not claim success
+- [ ] Agent should offer alternative methods
+
+---
+
+## Implementation Steps
+
+1. **Login to ElevenLabs Dashboard**
+   - Go to: https://elevenlabs.io/app/agents/agent_6501katrbe2re0c834kfes3hvk2d
+   - Navigate to agent settings
+
+2. **Backup Current Prompt**
+   - Copy entire current system prompt to a file
+   - Save as backup in case rollback is needed
+
+3. **Make Updates**
+   - Add Section 1 (Filler phrases) at top
+   - Update Section 2 (Brevity) in place
+   - Add Section 3 (Success confirmation) to ERROR HANDLING
+   - Add Section 4 (Email errors) to ERROR HANDLING
+   - Update Section 5 (Natural speech patterns)
+
+4. **Save & Test**
+   - Save the updated prompt
+   - Run through testing checklist
+   - Make adjustments as needed
+
+5. **Monitor**
+   - Test with real workflows for 1-2 days
+   - Gather feedback on improvements
+   - Fine-tune if needed
+
+---
+
+## Expected Improvements
+
+After implementation, expect:
+- **80-90% reduction** in filler phrase usage
+- **50% reduction** in response length (more concise)
+- **100% accuracy** in success/failure reporting
+- **Better user experience** with email failures (clear guidance)
+- **More professional** overall voice agent interaction
+
+---
+
+## Rollback Plan
+
+If issues arise after prompt updates:
+1. Access ElevenLabs dashboard
+2. Navigate to agent settings
+3. Restore previous prompt from backup
+4. Save and test
+
+**Backup Prompt Location:** Keep backup of original prompt in safe location before making changes.
+
+---
+
+## Additional Notes
+
+- These are prompt-only changes - no code deployment required
+- Changes take effect immediately after saving in ElevenLabs dashboard
+- Can be reverted instantly if needed
+- Test thoroughly before deploying to production users
+- Consider A/B testing if possible (old vs new prompt)
+
+---
+
+**Last Updated:** Phase 1 Implementation
+**Status:** Ready for ElevenLabs Dashboard Updates
+**Priority:** CRITICAL - Should be completed within 24 hours of code deployment

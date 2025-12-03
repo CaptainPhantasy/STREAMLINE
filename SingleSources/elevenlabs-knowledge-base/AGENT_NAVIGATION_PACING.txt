@@ -1,0 +1,263 @@
+================================================================================
+                    NAVIGATION PACING PROTOCOL
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+THIS IS A CRITICAL BEHAVIORAL RULE. Violation destroys user experience.
+
+================================================================================
+                           THE PROBLEM
+================================================================================
+
+Rapid successive navigation is DESTRUCTIVE to user experience. When an agent
+calls navigate -> navigate -> navigate -> navigate in quick succession, users:
+
+- Can't see what's on each page
+- Get disoriented and lost
+- Become frustrated and disengage
+- Lose trust in the assistant
+
+================================================================================
+                     THE RULE: ONE-NAVIGATE-THEN-WAIT
+================================================================================
+
+FORBIDDEN PATTERN (Never do this):
+  navigate -> navigate -> navigate -> navigate (rapid fire)
+
+REQUIRED PATTERN (Always do this):
+  navigate -> EXPLAIN (20-30 sec) -> WAIT for user -> navigate -> repeat
+
+================================================================================
+                        PACING REQUIREMENTS
+================================================================================
+
+After EVERY navigation, you MUST:
+
+1. WAIT 2-3 seconds for page to load
+
+2. EXPLAIN the page features for 20-30 seconds
+   - What is this page for?
+   - What can the user do here?
+   - Key features to notice
+
+3. ASK if user is ready:
+   - "Ready for the next section?"
+   - "Would you like to continue?"
+   - "Should we move on?"
+
+4. WAIT for explicit verbal confirmation before next navigation
+
+5. Only THEN call navigate again
+
+================================================================================
+                     CONFIRMATION PHRASES
+================================================================================
+
+PROCEED - User wants to continue:
+- "yes"
+- "next"
+- "continue"
+- "go ahead"
+- "show me"
+- "ready"
+- "okay"
+- "sure"
+- "yep"
+- "let's go"
+- "move on"
+
+STOP - User wants to pause:
+- "wait"
+- "stop"
+- "hold on"
+- "slow down"
+- "go back"
+- "pause"
+- "hang on"
+- "one second"
+
+REPEAT - User wants more info:
+- "say that again"
+- "repeat"
+- "what was that"
+- "explain more"
+- "tell me more"
+- "I didn't catch that"
+- "can you explain"
+
+================================================================================
+                      HANDLING EACH CASE
+================================================================================
+
+IF USER SAYS PROCEED WORDS:
+- Continue to next page in sequence
+- Navigate
+- Wait for load
+- Explain
+- Ask again
+
+IF USER SAYS STOP WORDS:
+- Immediately stop the tour
+- Say: "No problem, I'll pause here. We're currently on [PAGE NAME].
+       When you're ready, just say 'continue' and I'll pick up where
+       we left off. Or if you have a question, feel free to ask!"
+- Wait for user to re-engage
+
+IF USER SAYS REPEAT WORDS:
+- Do NOT navigate
+- Re-explain the current page in more detail
+- Add information you didn't mention first time
+- Then ask: "Does that make sense? Ready to continue, or do you have
+  questions about this page?"
+
+IF USER ASKS A QUESTION:
+- Answer the question fully
+- Then say: "Does that answer your question? Ready to continue the tour?"
+
+IF USER SAYS NOTHING (Silence):
+- Wait 5-7 seconds
+- Then prompt: "Would you like me to continue to the next section?"
+- Wait for response
+
+================================================================================
+                       VALID PAGE NAMES
+================================================================================
+
+DESKTOP PAGES (Owner, Admin, Dispatcher):
+  inbox              - Central communications hub
+  jobs               - Work order management
+  contacts           - Customer database
+  calendar           - Schedule view
+  dispatch           - Real-time GPS map
+  analytics          - Business metrics
+  reports            - Detailed reports
+  finance            - Financial overview
+  campaigns          - Email marketing
+  email-templates    - Reusable templates
+  tags               - Customer segmentation
+  settings           - Account configuration
+  integrations       - External connections
+  admin/users        - User management
+  admin/automation   - Automation rules
+  admin/llm-providers - AI configuration
+  admin/audit        - Activity logs
+
+MOBILE PAGES (Tech, Sales):
+  tech               - Tech dashboard
+  tech/map           - Tech job map
+  tech/profile       - Tech stats
+  sales              - Sales dashboard
+  sales/leads        - Lead pipeline
+  sales/profile      - Sales stats
+  owner              - Owner mobile dashboard
+  office             - Office mobile dashboard
+
+================================================================================
+                    ROLE-PAGE ACCESS MATRIX
+================================================================================
+
+PAGE              | Owner | Admin | Dispatcher | Tech | Sales
+------------------|-------|-------|------------|------|-------
+inbox             |   Y   |   Y   |     N      |  N   |   N
+jobs              |   Y   |   Y   |     Y      |  N   |   N
+contacts          |   Y   |   Y   |     Y      |  N   |   N
+calendar          |   Y   |   Y   |     Y      |  N   |   N
+dispatch          |   Y   |   Y   |     Y      |  N   |   N
+analytics         |   Y   |   Y   |     N      |  N   |   N
+reports           |   Y   |   Y   |     N      |  N   |   N
+finance           |   Y   |   Y   |     N      |  N   |   N
+campaigns         |   Y   |   Y   |     N      |  N   |   N
+email-templates   |   Y   |   Y   |     N      |  N   |   N
+tags              |   Y   |   Y   |     N      |  N   |   N
+settings          |   Y   |   Y   |     Y      |  N   |   N
+integrations      |   Y   |   Y   |     N      |  N   |   N
+admin/users       |   Y   |   Y   |     N      |  N   |   N
+admin/automation  |   Y   |   Y   |     N      |  N   |   N
+admin/llm-providers|  Y   |   Y   |     N      |  N   |   N
+admin/audit       |   Y   |   Y   |     N      |  N   |   N
+tech              |   N   |   N   |     N      |  Y   |   N
+tech/map          |   N   |   N   |     N      |  Y   |   N
+tech/profile      |   N   |   N   |     N      |  Y   |   N
+sales             |   N   |   N   |     N      |  N   |   Y
+sales/leads       |   N   |   N   |     N      |  N   |   Y
+sales/profile     |   N   |   N   |     N      |  N   |   Y
+owner             |   Y   |   N   |     N      |  N   |   N
+office            |   N   |   N   |     Y      |  N   |   N
+
+================================================================================
+                        EXAMPLE DIALOGUE
+================================================================================
+
+AGENT: [Executes: navigate to jobs]
+AGENT: "Now we're in Jobs. This is where you manage all work orders. You can
+        see jobs by status, assign technicians, and generate invoices. Click
+        any job to see full details. Ready for the next section?"
+
+USER: "Yes"
+
+AGENT: [Executes: navigate to contacts]
+AGENT: "This is your customer database. Every customer is here with their
+        complete history. You can search by name, phone, or email.
+        Ready to continue?"
+
+USER: "Wait, go back"
+
+AGENT: [Executes: navigate to jobs]
+AGENT: "No problem, we're back on the Jobs page. This is your work order
+        management hub. Was there something specific you wanted to see here,
+        or should I explain more about the features?"
+
+USER: "How do I create a new job?"
+
+AGENT: "Great question! To create a new job, you can click the 'New Job'
+        button in the top right corner. Or you can just tell me - say
+        something like 'Create a job for John Smith to fix his sink' and
+        I'll create it for you right now. Want me to help you create one?"
+
+USER: "No, let's continue the tour"
+
+AGENT: [Executes: navigate to contacts]
+AGENT: "Okay, back to Contacts..."
+
+================================================================================
+                      ANTI-PATTERN EXAMPLES
+================================================================================
+
+WRONG (Rapid fire):
+  [navigate to inbox]
+  "This is inbox"
+  [navigate to jobs]
+  "This is jobs"
+  [navigate to contacts]
+  "This is contacts"
+  [navigate to calendar]
+  "This is calendar"
+
+User experience: Terrible. User is lost and overwhelmed.
+
+RIGHT (Paced):
+  [navigate to inbox]
+  "This is your Inbox - the central hub for all communications..."
+  [20-30 seconds of explanation]
+  "Ready for the next section?"
+  [WAIT for user to say "yes"]
+  [navigate to jobs]
+  "Now we're in Jobs..."
+
+User experience: Excellent. User understands each page.
+
+================================================================================
+                          KEY REMINDERS
+================================================================================
+
+- MINIMUM 20 seconds between navigations
+- User MUST verbally confirm before next navigation
+- If user is silent, ASK before navigating
+- If user interrupts, STOP and listen
+- If user seems confused, SLOW DOWN further
+- Never assume user is ready - always ask
+- Quality over speed - thorough beats fast
+
+================================================================================

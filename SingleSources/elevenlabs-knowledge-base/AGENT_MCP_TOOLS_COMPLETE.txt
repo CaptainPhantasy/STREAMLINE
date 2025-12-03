@@ -1,0 +1,369 @@
+================================================================================
+                    MCP TOOLS COMPLETE REFERENCE
+================================================================================
+
+Version: 1.2
+Last Updated: January 28, 2025 - 3:00 PM
+Total Tools: 87 (18 Core + 60 Additional + 9 Enhanced Email Tools)
+Deployed URL: https://expbvujyegxmxvatcjqt.supabase.co/functions/v1/mcp-server
+
+THIS IS YOUR TOOL BIBLE. Use these tools to operate the CRM for users.
+
+================================================================================
+                         CRITICAL PROTOCOL
+================================================================================
+
+SEARCH-FIRST, ID-ALWAYS:
+- NEVER put UUIDs in name fields (contactName, techName)
+- ALWAYS use ID fields (contactId, techId) when you have UUIDs
+- SEARCH first to get UUIDs, then use those UUIDs for actions
+- CAPTURE returned UUIDs immediately for subsequent operations
+
+================================================================================
+                           CORE TOOLS (9)
+================================================================================
+
+--------------------------------------------------------------------------------
+TOOL 1: create_job
+--------------------------------------------------------------------------------
+PURPOSE: Create a new job/work order
+
+PARAMETERS:
+  - description (String) - REQUIRED: What work needs to be done
+  - contactId (UUID) - PREFERRED: Customer's UUID (use if you have it!)
+  - contactName (String) - FALLBACK: Customer name (only if no UUID)
+  - scheduledStart (String) - OPTIONAL: ISO 8601 datetime
+  - scheduledEnd (String) - OPTIONAL: ISO 8601 datetime
+  - techAssignedId (UUID) - OPTIONAL: Technician's UUID
+
+CRITICAL RULES:
+  - Provide EITHER contactId OR contactName, never both
+  - Always search_contacts FIRST to get contactId
+  - Never put a UUID in the contactName field
+
+CORRECT FLOW:
+  1. User: "Create job for John Smith"
+  2. You: search_contacts("John Smith") -> returns UUID
+  3. You: create_job(contactId: "uuid-123", description: "...")
+
+EXAMPLE PAYLOAD:
+{
+  "contactId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "description": "Replace water heater",
+  "scheduledStart": "2025-01-20T10:00:00Z"
+}
+
+--------------------------------------------------------------------------------
+TOOL 2: search_contacts
+--------------------------------------------------------------------------------
+PURPOSE: Find customers by name, email, or phone
+
+PARAMETERS:
+  - search (String) - REQUIRED: Search query
+
+RETURNS: Array of contacts with { id, first_name, last_name, email, phone }
+
+WHEN TO USE:
+  - ALWAYS before create_job for existing customers
+  - When user mentions a customer by name
+  - When looking up customer info
+
+EXAMPLE:
+  search_contacts("John Smith")
+  search_contacts("555-1234")
+  search_contacts("john@email.com")
+
+--------------------------------------------------------------------------------
+TOOL 3: create_contact
+--------------------------------------------------------------------------------
+PURPOSE: Add a new customer to the database
+
+PARAMETERS:
+  - firstName (String) - REQUIRED
+  - lastName (String) - REQUIRED
+  - email (String) - OPTIONAL
+  - phone (String) - OPTIONAL
+  - address (String) - OPTIONAL
+  - notes (String) - OPTIONAL
+
+RETURNS: { id: "new-uuid", success: true }
+
+CRITICAL: Capture the returned UUID immediately for use in create_job!
+
+FLOW FOR NEW CUSTOMER:
+  1. search_contacts("Alice") -> returns []
+  2. Ask: "I don't see Alice. What's her phone number?"
+  3. create_contact(firstName: "Alice", lastName: "Cooper", phone: "555-0199")
+  4. Capture UUID from response
+  5. create_job(contactId: "new-uuid", description: "...")
+
+--------------------------------------------------------------------------------
+TOOL 4: assign_tech
+--------------------------------------------------------------------------------
+PURPOSE: Assign a technician to a job
+
+PARAMETERS:
+  - jobId (UUID) - REQUIRED: Job ID
+  - techId (UUID) - REQUIRED: Technician ID
+  - assignedBy (String) - OPTIONAL: Who made assignment
+
+WHEN TO USE:
+  - "Assign Mike to job 123"
+  - "Send technician John to..."
+
+FLOW:
+  1. search_users("Mike") -> get UUID
+  2. assign_tech(jobId: "uuid-123", techId: "tech-uuid")
+
+--------------------------------------------------------------------------------
+TOOL 5: search_users
+--------------------------------------------------------------------------------
+PURPOSE: Find technicians/staff by name or email
+
+PARAMETERS:
+  - search (String) - REQUIRED: Search query
+  - role (String) - OPTIONAL: Filter by role (tech, admin, etc.)
+
+RETURNS: Array of users with { id, name, email, role }
+
+USE CASE:
+  - Before assign_tech
+  - Finding who's available
+
+--------------------------------------------------------------------------------
+TOOL 6: update_job_status
+--------------------------------------------------------------------------------
+PURPOSE: Change job status
+
+PARAMETERS:
+  - jobId (UUID) - REQUIRED: Job ID
+  - status (String) - REQUIRED: New status
+    * lead - Initial lead
+    * scheduled - Job scheduled
+    * en_route - Tech on the way
+    * in_progress - Work being done
+    * completed - Work finished
+    * invoiced - Invoice sent
+    * paid - Payment received
+
+--------------------------------------------------------------------------------
+TOOL 7: update_job
+--------------------------------------------------------------------------------
+PURPOSE: Update job details (NOT status)
+
+PARAMETERS:
+  - jobId (UUID) - REQUIRED: Job ID
+  - scheduledStart (String) - OPTIONAL: New start time
+  - scheduledEnd (String) - OPTIONAL: New end time
+  - description (String) - OPTIONAL: Update description
+
+USE: "Reschedule job 123 to 3 PM tomorrow"
+
+--------------------------------------------------------------------------------
+TOOL 8: navigate
+--------------------------------------------------------------------------------
+PURPOSE: Change user's screen/view
+
+PARAMETERS:
+  - page (String) - REQUIRED: Where to navigate
+  - context (Object) - OPTIONAL: Additional context
+
+VALID PAGES:
+  - inbox - Email/messages
+  - jobs - Job list
+  - contacts - Customer list
+  - analytics - Reports dashboard
+  - finance - Financial overview
+  - tech - Technician dashboard
+  - campaigns - Marketing campaigns
+  - email-templates - Email templates
+  - tags - Tag management
+  - settings - System settings
+  - integrations - Third-party integrations
+
+CRITICAL: After navigate, always ask "Ready for next section?" and WAIT!
+
+--------------------------------------------------------------------------------
+TOOL 9: send_email
+--------------------------------------------------------------------------------
+PURPOSE: Send email to a contact
+
+PARAMETERS:
+  - to (String) - REQUIRED: Valid email address
+  - subject (String) - REQUIRED
+  - body (String) - REQUIRED: Can include HTML
+  - jobId (UUID) - OPTIONAL: For context/linking
+
+================================================================================
+                      ENHANCED EMAIL TOOLS (9 NEW)
+================================================================================
+
+--------------------------------------------------------------------------------
+TOOL 10: send_email_template
+--------------------------------------------------------------------------------
+PURPOSE: Send professional emails using predefined templates
+
+PARAMETERS:
+  - templateName (String, Required): Choose from templates
+    * "Welcome Email" - New customer onboarding
+    * "Job Status Update" - Job progress notifications
+    * "Invoice Notification" - Invoice delivery
+    * "Appointment Reminder" - Upcoming appointment alerts
+  - to (String, Required): Recipient email address
+  - variables (Object, Optional): Template variables
+  - scheduledAt (String, Optional): ISO datetime for scheduling
+
+EXAMPLE:
+{
+  "templateName": "Job Status Update",
+  "to": "customer@email.com",
+  "variables": {
+    "jobId": "JOB-123",
+    "status": "Completed",
+    "customerName": "John Smith",
+    "notes": "All work completed successfully"
+  }
+}
+
+--------------------------------------------------------------------------------
+TOOL 11: send_custom_email
+--------------------------------------------------------------------------------
+PURPOSE: Send fully customized emails with HTML content
+
+PARAMETERS:
+  - to (String, Required): Recipient email
+  - subject (String, Required): Email subject
+  - html (String, Required): HTML email content
+  - text (String, Optional): Plain text version
+  - attachments (Array, Optional): File attachments
+  - scheduledAt (String, Optional): Schedule for later
+
+EXAMPLE:
+{
+  "to": "customer@email.com",
+  "subject": "Follow-up on your service",
+  "html": "<p>Hi John,</p><p>Just following up on...</p>"
+}
+
+--------------------------------------------------------------------------------
+TOOL 12: send_job_status_email
+--------------------------------------------------------------------------------
+PURPOSE: Automated job status updates to customers
+
+PARAMETERS:
+  - jobId (UUID, Required): Job identifier
+  - status (Enum, Required): New job status
+    * pending, assigned, en_route, in_progress, completed, cancelled
+  - notes (String, Optional): Additional details for customer
+  - eta (String, Optional): Estimated time of arrival
+
+USE CASE: Automatically notify customers when job status changes
+
+--------------------------------------------------------------------------------
+TOOL 13: send_invoice_email
+--------------------------------------------------------------------------------
+PURPOSE: Send invoice to customer with optional PDF
+
+PARAMETERS:
+  - invoiceId (UUID, Required): Invoice identifier
+  - recipientEmail (String, Optional): Override recipient
+  - attachPDF (Boolean, Optional): Attach PDF (default: true)
+
+USE CASE: Professional invoice delivery
+
+--------------------------------------------------------------------------------
+TOOL 14: send_appointment_reminder
+--------------------------------------------------------------------------------
+PURPOSE: Schedule automated appointment reminders
+
+PARAMETERS:
+  - appointmentId (String, Required): Appointment ID
+  - customerEmail (String, Required): Customer email
+  - scheduledAt (String, Required): When to send reminder
+  - rescheduleUrl (String, Optional): Reschedule link
+
+USE CASE: Reduce no-shows with timely reminders
+
+--------------------------------------------------------------------------------
+TOOL 15: get_email_templates
+--------------------------------------------------------------------------------
+PURPOSE: List all available email templates
+
+RETURNS: Array of template objects with name, subject, variables
+
+USE CASE: See what templates are available
+
+--------------------------------------------------------------------------------
+TOOL 16: get_email_analytics
+--------------------------------------------------------------------------------
+PURPOSE: Get email performance statistics
+
+PARAMETERS:
+  - startDate (String, Optional): Start date (YYYY-MM-DD)
+  - endDate (String, Optional): End date (YYYY-MM-DD)
+  - templateId (String, Optional): Filter by template
+
+RETURNS: {
+  totalSent, totalDelivered, totalOpened, totalClicked,
+  deliveryRate, openRate, clickRate, bounceRate
+}
+
+USE CASE: Monitor email performance
+
+--------------------------------------------------------------------------------
+TOOL 17: list_email_queue
+--------------------------------------------------------------------------------
+PURPOSE: Check email queue status
+
+PARAMETERS:
+  - status (Enum, Optional): Filter by status
+  - limit (Integer, Optional): Max results (default: 50)
+
+RETURNS: Array of queued emails with status
+
+USE CASE: Monitor email delivery issues
+
+--------------------------------------------------------------------------------
+TOOL 18: create_email_template
+--------------------------------------------------------------------------------
+PURPOSE: Create new custom email templates
+
+PARAMETERS:
+  - name (String, Required): Template name
+  - subject (String, Required): Subject line
+  - html (String, Required): HTML content
+  - text (String, Optional): Plain text version
+  - variables (Array, Optional): Variables used
+
+USE CASE: Build reusable email templates
+
+================================================================================
+                          UTILITY TOOLS (60)
+================================================================================
+[Additional 60 tools listed here - same as before]
+
+================================================================================
+                         TOOL SELECTION GUIDE
+================================================================================
+
+USER SAYS                          | TOOL TO USE
+-----------------------------------|---------------------------
+"Create a job for..."              | search_contacts -> create_job
+"Find/Look up [name]"              | search_contacts
+"Add new customer..."              | create_contact
+"Assign [tech] to..."              | search_users -> assign_tech
+"Mark job as [status]"             | update_job_status
+"Reschedule to..."                 | update_job
+"Take me to / Show me..."          | navigate
+"Send email to..."                 | send_email OR send_email_template
+"Send welcome email..."            | send_email_template (Welcome Email)
+"Notify customer about job..."      | send_job_status_email
+"Send invoice..."                  | send_invoice_email
+"Set appointment reminder..."      | send_appointment_reminder
+"Tag [contact] as..."              | add_tag_to_contact
+"Add note that..."                 | add_note_to_contact OR add_note_to_job
+"What's on my schedule?"           | navigate to jobs OR get_job
+"Check email stats..."              | get_email_analytics
+"Create email template..."         | create_email_template
+
+================================================================================

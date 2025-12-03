@@ -1,0 +1,79 @@
+.partsTable {
+  /* Use theme variables for proper contrast */
+}
+
+.partsTable td,
+.partsTable th {
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+}
+
+.partsTable td span,
+.partsTable td div {
+  color: var(--color-text-primary) !important;
+}
+
+.partsTable td .text-muted-foreground {
+  color: var(--color-text-secondary) !important;
+}
+
+.partsTable .badge {
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+  background-color: var(--badge-bg) !important;
+}
+
+/* Ensure headers are visible */
+.partsTable th {
+  color: var(--color-text-primary) !important;
+  font-weight: 600;
+}
+
+/* Table row hover state */
+.partsTable tbody tr:hover {
+  background-color: var(--color-bg-secondary) !important;
+}
+
+/* Badge styling improvements */
+.partsTable .badge {
+  color: var(--badge-text) !important;
+  border-color: var(--color-border) !important;
+  background-color: var(--badge-bg) !important;
+}
+
+/* Low stock alert styling */
+.partsTable .text-orange-600 {
+  color: var(--color-accent-primary) !important;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .partsTable {
+    font-size: 14px;
+  }
+
+  .partsTable th,
+  .partsTable td {
+    padding: 8px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .partsTable th:nth-child(3),
+  .partsTable td:nth-child(3) {
+    display: none; /* Hide category column on mobile */
+  }
+
+  .partsTable td div span {
+    display: block;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .partsTable td div span.text-xs {
+    display: none; /* Hide description on mobile */
+  }
+}

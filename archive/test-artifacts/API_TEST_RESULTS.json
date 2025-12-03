@@ -1,0 +1,729 @@
+{
+  "timestamp": "2025-11-27T14:31:10.475Z",
+  "summary": {
+    "total": 55,
+    "passed": 37,
+    "failed": 1,
+    "warnings": 17,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "endpoint": "/api/auth/signout",
+      "method": "POST",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 817
+    },
+    {
+      "endpoint": "/api/users",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 656,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/users/me",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 109
+    },
+    {
+      "endpoint": "/api/account/settings",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 132
+    },
+    {
+      "endpoint": "/api/settings/company",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 147
+    },
+    {
+      "endpoint": "/api/settings/profile",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 135
+    },
+    {
+      "endpoint": "/api/settings/notifications",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 112
+    },
+    {
+      "endpoint": "/api/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 666
+    },
+    {
+      "endpoint": "/api/contact-tags",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 417
+    },
+    {
+      "endpoint": "/api/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 1143
+    },
+    {
+      "endpoint": "/api/estimates",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 157
+    },
+    {
+      "endpoint": "/api/parts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 123
+    },
+    {
+      "endpoint": "/api/parts/low-stock",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 107
+    },
+    {
+      "endpoint": "/api/invoices",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 779,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/payments",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 540,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/conversations",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 564
+    },
+    {
+      "endpoint": "/api/call-logs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 689
+    },
+    {
+      "endpoint": "/api/notifications",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 609
+    },
+    {
+      "endpoint": "/api/email-templates",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 888
+    },
+    {
+      "endpoint": "/api/campaigns",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 712
+    },
+    {
+      "endpoint": "/api/automation-rules",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 409,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/settings/automation/rules",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 154
+    },
+    {
+      "endpoint": "/api/llm-providers",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 397,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm/health",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 503,
+      "responseTime": 1085,
+      "error": "HTTP 503",
+      "details": {
+        "healthy": false,
+        "providers": [
+          {
+            "provider": "openai-gpt4o-mini",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "openai-gpt4o",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-haiku-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-sonnet-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          }
+        ],
+        "stats": {
+          "total": 4,
+          "healthy": 0,
+          "unhealthy": 4,
+          "healthPercentage": "0.0%"
+        },
+        "timestamp": "2025-11-27T14:30:47.858Z"
+      }
+    },
+    {
+      "endpoint": "/api/analytics/dashboard",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 568
+    },
+    {
+      "endpoint": "/api/analytics/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 560
+    },
+    {
+      "endpoint": "/api/analytics/revenue",
+      "method": "GET",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 501,
+      "error": "Failed to fetch revenue",
+      "details": {
+        "error": "Failed to fetch revenue"
+      }
+    },
+    {
+      "endpoint": "/api/analytics/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 556
+    },
+    {
+      "endpoint": "/api/reports",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 310,
+      "error": "Missing required parameter: type",
+      "details": {
+        "error": "Missing required parameter: type"
+      }
+    },
+    {
+      "endpoint": "/api/finance/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 135
+    },
+    {
+      "endpoint": "/api/audit",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 330,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/dispatch/jobs/active",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 149
+    },
+    {
+      "endpoint": "/api/dispatch/techs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 150
+    },
+    {
+      "endpoint": "/api/dispatch/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 237
+    },
+    {
+      "endpoint": "/api/tech/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 289
+    },
+    {
+      "endpoint": "/api/tech/gates",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 278,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/office/clearances",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 166
+    },
+    {
+      "endpoint": "/api/office/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 207
+    },
+    {
+      "endpoint": "/api/owner/stats",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 188
+    },
+    {
+      "endpoint": "/api/calendar/events",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 9502
+    },
+    {
+      "endpoint": "/api/time-entries",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 329,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/templates/jobs",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 416
+    },
+    {
+      "endpoint": "/api/templates/contacts",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 339
+    },
+    {
+      "endpoint": "/api/search",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 311,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/integrations/gmail/status",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 633
+    },
+    {
+      "endpoint": "/api/integrations/microsoft/status",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 520
+    },
+    {
+      "endpoint": "/api/onboarding/status",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 197
+    },
+    {
+      "endpoint": "/api/onboarding/analytics",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 187,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/meetings",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 398,
+      "error": "User account not found",
+      "details": {
+        "error": "User account not found"
+      }
+    },
+    {
+      "endpoint": "/api/review-requests",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 355,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/signatures",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 315,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-materials",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 390,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-photos",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 441,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/leads/pipeline",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 401,
+      "responseTime": 208
+    },
+    {
+      "endpoint": "/api/test",
+      "method": "GET",
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": 210
+    }
+  ],
+  "failures": [
+    {
+      "endpoint": "/api/analytics/revenue",
+      "method": "GET",
+      "status": "FAIL",
+      "statusCode": 500,
+      "responseTime": 501,
+      "error": "Failed to fetch revenue",
+      "details": {
+        "error": "Failed to fetch revenue"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "endpoint": "/api/users",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 656,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/invoices",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 779,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/payments",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 404,
+      "responseTime": 540,
+      "error": "Endpoint not found (404)",
+      "details": {
+        "error": "User not found"
+      }
+    },
+    {
+      "endpoint": "/api/automation-rules",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 409,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm-providers",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 397,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/llm/health",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 503,
+      "responseTime": 1085,
+      "error": "HTTP 503",
+      "details": {
+        "healthy": false,
+        "providers": [
+          {
+            "provider": "openai-gpt4o-mini",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "openai-gpt4o",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-haiku-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          },
+          {
+            "provider": "anthropic-claude-sonnet-4-5",
+            "healthy": false,
+            "latency": null,
+            "lastCheck": "1970-01-01T00:00:00.000Z",
+            "error": "Not checked yet"
+          }
+        ],
+        "stats": {
+          "total": 4,
+          "healthy": 0,
+          "unhealthy": 4,
+          "healthPercentage": "0.0%"
+        },
+        "timestamp": "2025-11-27T14:30:47.858Z"
+      }
+    },
+    {
+      "endpoint": "/api/reports",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 310,
+      "error": "Missing required parameter: type",
+      "details": {
+        "error": "Missing required parameter: type"
+      }
+    },
+    {
+      "endpoint": "/api/audit",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 403,
+      "responseTime": 330,
+      "error": "Forbidden",
+      "details": {
+        "error": "Forbidden"
+      }
+    },
+    {
+      "endpoint": "/api/tech/gates",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 278,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/time-entries",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 329,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/search",
+      "method": "POST",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 311,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/onboarding/analytics",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 187,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/meetings",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 398,
+      "error": "User account not found",
+      "details": {
+        "error": "User account not found"
+      }
+    },
+    {
+      "endpoint": "/api/review-requests",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 405,
+      "responseTime": 355,
+      "error": "HTTP 405",
+      "details": null
+    },
+    {
+      "endpoint": "/api/signatures",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 315,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-materials",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 390,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    },
+    {
+      "endpoint": "/api/job-photos",
+      "method": "GET",
+      "status": "WARN",
+      "statusCode": 400,
+      "responseTime": 441,
+      "error": "Missing jobId parameter",
+      "details": {
+        "error": "Missing jobId parameter"
+      }
+    }
+  ]
+}

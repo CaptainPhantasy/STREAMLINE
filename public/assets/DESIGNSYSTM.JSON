@@ -1,0 +1,181 @@
+{
+  "designSystemName": "CRM-AI PRO NeonOps",
+  "version": "2.0.1",
+  "notes": "Design system definition for the high-fidelity, cyberpunk neon-glow icon set used in the CRM-AI PRO platform. This system emphasizes self-illuminated elements, circuit board textures, and high-contrast vitality against dark backgrounds.",
+  "foundations": {
+    "colors": {
+      "palette": {
+        "neonBlue": {
+          "core": "#FFFFFF",
+          "glow100": "#AEEFFF",
+          "glow300": "#00E5FF",
+          "glow500": "#00B8D4",
+          "glow700": "#008BA3"
+        },
+        "neonGreen": {
+          "core": "#FFFFFF",
+          "glow100": "#C3F5D1",
+          "glow300": "#39FF14",
+          "glow500": "#37C856",
+          "glow700": "#20B042"
+        },
+        "human": {
+          "skin": "#FFCDB2",
+          "hair": "#8D5524",
+          "suitBlue": "#1C4DDE",
+          "shirtCyan": "#00E5FF"
+        },
+        "accent": {
+          "paidRed": "#FF4500",
+          "paidStampBorder": "#FF6B6B"
+        },
+        "neutral": {
+          "white": "#FFFFFF",
+          "black": "#000000",
+          "transparent": "rgba(0,0,0,0)"
+        }
+      },
+      "semantic": {
+        "glow": {
+          "primary": "var(--neonBlue-glow300)",
+          "secondary": "var(--neonGreen-glow300)",
+          "accent": "var(--accent-paidRed)"
+        },
+        "stroke": {
+          "lightCore": "var(--neutral-white)",
+          "labelOutline": "var(--neutral-black)"
+        },
+        "texture": {
+          "circuitPattern": "var(--neonBlue-glow700)"
+        }
+      }
+    },
+    "typography": {
+      "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+      "weights": {
+        "semibold": 600,
+        "bold": 700
+      },
+      "roles": {
+        "iconLabel": {
+          "fontSize": "14px",
+          "fontWeight": 600,
+          "lineHeight": "20px",
+          "color": "#FFFFFF",
+          "textTransform": "lowercase",
+          "customStyling": {
+            "textStroke": "3pt #000000",
+            "paintOrder": "stroke fill"
+          }
+        },
+        "splashTitle": {
+          "fontSize": "32px",
+          "fontWeight": 700,
+          "color": "#FFFFFF",
+          "textTransform": "uppercase"
+        },
+        "splashTagline": {
+          "fontSize": "14px",
+          "fontWeight": 600,
+          "color": "#00E5FF",
+          "textTransform": "uppercase",
+          "letterSpacing": "1px"
+        }
+      }
+    },
+    "effects": {
+      "shadows": {
+        "neonBlueSmall": "0 0 5px #00E5FF, 0 0 10px #00E5FF",
+        "neonBlueMedium": "0 0 10px #00E5FF, 0 0 20px #00E5FF, 0 0 30px rgba(0, 229, 255, 0.5)",
+        "neonBlueLarge": "0 0 15px #00E5FF, 0 0 30px #00E5FF, 0 0 50px #00E5FF",
+        "neonGreenMedium": "0 0 10px #39FF14, 0 0 20px #39FF14",
+        "insetGlowBlue": "inset 0 0 15px rgba(0, 229, 255, 0.6)"
+      },
+      "filters": {
+        "blueGlowDrop": "drop-shadow(0 0 8px #00E5FF)",
+        "greenGlowDrop": "drop-shadow(0 0 8px #39FF14)"
+      },
+      "textures": {
+        "circuitBoard": {
+          "type": "svgPattern",
+          "opacity": 0.4,
+          "blendMode": "overlay"
+        }
+      }
+    }
+  },
+  "components": {
+    "featureIcon": {
+      "notes": "The standard circular icon used for application features (e.g., jobs, contacts).",
+      "container": {
+        "shape": "circle",
+        "width": "64px",
+        "height": "64px",
+        "backgroundColor": "rgba(0, 20, 40, 0.8)",
+        "border": "2px solid #00E5FF",
+        "boxShadow": "var(--effects-shadows-neonBlueMedium), var(--effects-shadows-insetGlowBlue)",
+        "overflow": "hidden",
+        "position": "relative"
+      },
+      "backgroundTexture": {
+        "pattern": "var(--effects-textures-circuitBoard)",
+        "color": "var(--colors-semantic-texture-circuitPattern)"
+      },
+      "internalIllustration": {
+        "style": "Cartoonish but sleek, defined by thick glowing strokes.",
+        "strokeWidth": "2px",
+        "strokeColor": "#FFFFFF",
+        "fillColor": "gradient(linear, rgba(0,229,255,0.2), rgba(0,229,255,0.5))",
+        "filter": "var(--effects-filters-blueGlowDrop)",
+        "accentElements": {
+          "strokeColor": "#39FF14",
+          "filter": "var(--effects-filters-greenGlowDrop)"
+        }
+      },
+      "label": {
+        "extends": "typography-roles-iconLabel",
+        "marginTop": "8px",
+        "textAlign": "center"
+      }
+    },
+    "splashLogo": {
+      "notes": "The main branding illustration combining the AI brain and human handshake.",
+      "container": {
+        "style": "Complex interlocking circular elements forming a central emblem.",
+        "primaryGlow": "var(--effects-shadows-neonBlueLarge)",
+        "secondaryGlow": "var(--effects-shadows-neonGreenMedium)"
+      },
+      "elements": {
+        "aiBrain": {
+          "color": "var(--colors-palette-neonBlue-glow300)",
+          "texture": "circuitBoard"
+        },
+        "energyBridge": {
+          "color": "var(--colors-palette-neonGreen-glow300)",
+          "style": "Dynamic lightning bolt/arrow shape connecting left to right."
+        },
+        "humanHandshake": {
+          "styles": "Warm skin tones contrasted with glowing blue suit cuffs."
+        }
+      },
+      "typography": {
+        "title": { "extends": "typography-roles-splashTitle" },
+        "tagline": { "extends": "typography-roles-splashTagline" }
+      }
+    },
+    "adaptiveIcon": {
+      "notes": "Simplified square version for app launchers.",
+      "container": {
+        "shape": "roundedSquare",
+        "borderRadius": "22%",
+        "backgroundColor": "linear-gradient(135deg, #001528 0%, #002a50 100%)",
+        "border": "none",
+        "boxShadow": "var(--effects-shadows-neonBlueSmall)"
+      },
+      "content": {
+        "style": "Simplified, centered illustration using the featureIcon internal styling.",
+        "filter": "var(--effects-filters-blueGlowDrop)"
+      }
+    }
+  }
+}

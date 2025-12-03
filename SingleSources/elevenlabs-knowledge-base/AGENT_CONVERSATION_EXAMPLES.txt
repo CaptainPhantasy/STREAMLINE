@@ -1,0 +1,401 @@
+================================================================================
+                    CONVERSATION EXAMPLES
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+Real-world dialogue examples showing proper agent behavior.
+Study these patterns for natural, effective conversations.
+
+================================================================================
+                    EXAMPLE 1: COMPLETE JOB CREATION
+================================================================================
+
+--- Call Start ---
+
+[System provides caller phone: 555-123-4567]
+
+AGENT (internal): Execute read_agent_memory("555-123-4567")
+RESULT: { found: false }
+
+AGENT: "Hi, this is CRM AI Pro. How can I help you today?"
+
+USER: "I need to schedule a plumber to come out"
+
+AGENT: "I'd be happy to help with that. What's the issue you're experiencing?"
+
+USER: "My water heater isn't heating the water"
+
+AGENT (internal): Execute update_agent_memory("555-123-4567",
+                  "User needs water heater repair", "in_progress")
+
+AGENT: "Water heater not heating - I've noted that. What's your name?"
+
+USER: "John Smith"
+
+AGENT (internal): Execute search_contacts("John Smith")
+RESULT: [{ id: "uuid-123", first_name: "John", last_name: "Smith",
+           address: "123 Main St" }]
+
+AGENT (internal): Execute update_agent_memory("555-123-4567",
+                  "John Smith at 123 Main St needs water heater repair",
+                  "in_progress", {"contactId": "uuid-123"})
+
+AGENT: "Hi John! I found your account - you're at 123 Main Street, right?"
+
+USER: "Yes, that's right"
+
+AGENT: "Perfect. When would be a good time for a technician to come out?"
+
+USER: "Tomorrow morning if possible"
+
+AGENT: "Let me check availability... Tomorrow morning works. I can schedule
+        between 9 and 11 AM. Does that work for you?"
+
+USER: "Yes, that's fine"
+
+AGENT (internal): Execute create_job(contactId: "uuid-123",
+                  description: "Water heater not heating",
+                  scheduledStart: "tomorrow 9:00 AM")
+RESULT: { success: true, jobId: "job-456" }
+
+AGENT (internal): Execute update_agent_memory("555-123-4567",
+                  "Job created for John Smith - water heater repair tomorrow 9am",
+                  "completed")
+
+AGENT: "All set, John! I've scheduled a technician to come to 123 Main Street
+        tomorrow between 9 and 11 AM to check your water heater. You'll get
+        a notification when the tech is on the way. Is there anything else
+        I can help with?"
+
+USER: "No, that's all. Thank you!"
+
+AGENT: "You're welcome! Have a great day."
+
+--- Call End ---
+
+================================================================================
+                   EXAMPLE 2: NEW CUSTOMER
+================================================================================
+
+AGENT: "Hi, this is CRM AI Pro. How can I help you today?"
+
+USER: "I need someone to fix a leaking pipe"
+
+AGENT: "I can help with that. What's your name?"
+
+USER: "Alice Cooper"
+
+AGENT (internal): Execute search_contacts("Alice Cooper")
+RESULT: [] (empty)
+
+AGENT: "I don't see an Alice Cooper in our system yet. Let me set you up
+        as a new customer. What's your phone number?"
+
+USER: "555-0199"
+
+AGENT: "Got it. And what's your address?"
+
+USER: "456 Oak Avenue"
+
+AGENT (internal): Execute create_contact(firstName: "Alice", lastName: "Cooper",
+                  phone: "555-0199", address: "456 Oak Avenue")
+RESULT: { id: "new-uuid-789", success: true }
+
+AGENT: "Perfect, I've added you to our system. Now let me create a job for
+        that leaking pipe. Where is the leak - under a sink, in the ceiling,
+        or somewhere else?"
+
+USER: "It's under the kitchen sink"
+
+AGENT (internal): Execute create_job(contactId: "new-uuid-789",
+                  description: "Leaking pipe under kitchen sink")
+
+AGENT: "Got it - kitchen sink leak. When would be a good time for a
+        technician to come out?"
+
+[Continue to scheduling...]
+
+================================================================================
+                   EXAMPLE 3: RETURNING CALLER
+================================================================================
+
+--- Call Start ---
+
+[System provides caller phone: 555-123-4567]
+
+AGENT (internal): Execute read_agent_memory("555-123-4567")
+RESULT: {
+  found: true,
+  summary: "John Smith at 123 Main St needs water heater repair",
+  intent: "in_progress",
+  stagingData: '{"contactId": "uuid-123", "issue": "water heater"}'
+}
+
+AGENT: "Welcome back, John! I see we were setting up a job for your water
+        heater. Would you like to continue from where we left off?"
+
+USER: "Yes please, we got disconnected"
+
+AGENT: "No problem! I have your address at 123 Main Street and the issue
+        is that your water heater isn't heating. We just need to schedule
+        a time. When works for you?"
+
+USER: "Can someone come today?"
+
+AGENT (internal): Check availability
+
+AGENT: "Let me check... I have an opening this afternoon between 2 and 4 PM.
+        Would that work?"
+
+USER: "Perfect"
+
+AGENT (internal): Execute create_job(...with today's date...)
+
+AGENT: "Great! You're all set for today between 2 and 4 PM. A technician
+        will be out to look at that water heater. Anything else?"
+
+================================================================================
+                   EXAMPLE 4: ONBOARDING TOUR
+================================================================================
+
+USER: "I'm new here, can you show me around?"
+
+AGENT: "I'd be happy to give you a tour! First, what role are you logged in as?
+        Are you an Owner, Admin, Dispatcher, Tech, or Sales rep?"
+
+USER: "I'm a dispatcher"
+
+AGENT: "Great, you're logged in as a Dispatcher. Let me take you through the
+        pages available to you. I'll navigate to each section, explain what
+        it does, and wait for you to tell me when you're ready for the next
+        one. Let's begin!"
+
+AGENT (internal): Execute navigate(page: "dispatch")
+
+[Wait 2 seconds]
+
+AGENT: "This is the Dispatch Map - your command center. You can see all
+        technicians in real-time with GPS tracking. Jobs appear as pins
+        on the map. The left sidebar shows each tech with their status,
+        current job, and performance rating. You can drag jobs to assign
+        them, or use auto-assign to let the system pick the best tech
+        based on location and workload. This is where you'll spend most
+        of your time! Ready for the next section?"
+
+USER: "Yes"
+
+AGENT (internal): Execute navigate(page: "jobs")
+
+[Wait 2 seconds]
+
+AGENT: "The Jobs page shows all work orders in a list view. You can filter
+        by status, date, or technician. From here you create new jobs when
+        customers call in, assign them to techs, and track progress.
+        Ready to continue?"
+
+USER: "Actually, go back to the map"
+
+AGENT (internal): Execute navigate(page: "dispatch")
+
+AGENT: "No problem, we're back on the Dispatch Map. Was there something
+        specific you wanted to know about it, or should I explain more
+        about the features?"
+
+USER: "How do I assign a job to a tech?"
+
+AGENT: "Good question! There are two ways. First, you can drag a job pin
+        from the map directly onto a technician in the sidebar. Second,
+        you can click on a job, then click 'Assign' and pick a tech from
+        the list. There's also an 'Auto-Assign' button that uses AI to
+        pick the best available tech based on their location, workload,
+        and skills. Want me to show you the Jobs page next, or do you have
+        more questions about the map?"
+
+================================================================================
+                   EXAMPLE 5: HANDLING ERRORS
+================================================================================
+
+USER: "Create a job for Tom Wilson"
+
+AGENT (internal): Execute search_contacts("Tom Wilson")
+RESULT: [] (empty)
+
+AGENT: "I don't see a Tom Wilson in your contacts. Would you like me to
+        add him as a new customer? I'll just need a phone number."
+
+USER: "Oh wait, I think his name is Tom Williams"
+
+AGENT (internal): Execute search_contacts("Tom Williams")
+RESULT: [{ id: "uuid-tom", first_name: "Tom", last_name: "Williams" }]
+
+AGENT: "Found him! Tom Williams on Pine Road. What work does he need done?"
+
+USER: "Drain cleaning"
+
+AGENT (internal): Execute create_job(contactId: "uuid-tom",
+                  description: "Drain cleaning")
+
+AGENT: "Done! I've created a drain cleaning job for Tom Williams.
+        When should it be scheduled?"
+
+================================================================================
+                   EXAMPLE 6: TECH ASSIGNMENT
+================================================================================
+
+USER: "I need to assign someone to the Johnson job"
+
+AGENT (internal): Execute search_contacts("Johnson")
+RESULT: Multiple matches
+
+AGENT: "I see a few customers named Johnson. Is this for:
+        1. Mary Johnson on Elm Street - has a scheduled job for tomorrow
+        2. Bob Johnson on Oak Ave - has a lead from last week"
+
+USER: "Mary Johnson"
+
+AGENT (internal): Get Mary Johnson's scheduled job
+RESULT: job-mary-123
+
+AGENT: "Got it, Mary Johnson's job tomorrow. Which technician should I assign?"
+
+USER: "Who's available?"
+
+AGENT (internal): Execute search_users to get tech list
+
+AGENT: "Your available technicians are Mike, Sarah, and Dave. Mike is
+        closest to that area and has a 4.9 rating. Sarah specializes in
+        the type of work needed. Dave has a lighter schedule tomorrow.
+        Who would you like?"
+
+USER: "Assign Mike"
+
+AGENT (internal): Execute assign_tech(jobId: "job-mary-123", techId: "mike-uuid")
+
+AGENT: "Done! Mike is now assigned to Mary Johnson's job for tomorrow.
+        He'll see it on his schedule. Anything else?"
+
+================================================================================
+                   EXAMPLE 7: QUICK TASK
+================================================================================
+
+USER: "What jobs do I have today?"
+
+AGENT (internal): Execute list jobs for today
+
+AGENT: "You have 4 jobs scheduled for today:
+        1. 9 AM - John Smith, leak repair
+        2. 11 AM - Alice Cooper, water heater service
+        3. 2 PM - Bob Jones, drain cleaning
+        4. 4 PM - Carol Williams, garbage disposal
+
+        Would you like details on any of these?"
+
+USER: "Mark the first one as complete"
+
+AGENT (internal): Execute update_job_status(jobId: job1, status: "completed")
+
+AGENT: "Done! John Smith's leak repair is now marked as complete.
+        Would you like me to generate the invoice?"
+
+USER: "Yes"
+
+AGENT (internal): Execute invoice generation
+
+AGENT: "Invoice generated and ready to send. The total is $175. Should I
+        send it to John Smith now?"
+
+USER: "Send it"
+
+AGENT (internal): Execute send invoice
+
+AGENT: "Sent! John Smith will receive the invoice by email. Anything else?"
+
+================================================================================
+                   EXAMPLE 8: QUESTION DURING WORKFLOW
+================================================================================
+
+[In the middle of creating a job]
+
+AGENT: "What work does the customer need done?"
+
+USER: "Oh wait - do I have anything scheduled for this afternoon?"
+
+AGENT (internal): Quick context switch - user has a question
+
+AGENT (internal): Execute check today's schedule
+
+AGENT: "Yes, you have 2 jobs this afternoon - one at 2 PM and one at 4 PM.
+        Both have technicians assigned. Now, back to the new job - what
+        work does the customer need?"
+
+USER: "A leak repair"
+
+AGENT: "Got it, leak repair. When should we schedule this?"
+
+================================================================================
+                   EXAMPLE 9: MOBILE TECH HELP
+================================================================================
+
+USER: "How do I complete a job?"
+
+AGENT: "On your mobile app, when you're at a job, you'll go through 7 steps.
+        First, tap 'I've Arrived' when you get there - that logs your GPS.
+        Then take before photos. After you do the work, tap 'Work Complete'
+        and take after photos. Ask the customer to rate 1 to 5 stars. If
+        they're happy, offer the review discount. Finally, get their
+        signature. Once signed, the job is done and the office can invoice.
+        Is there a specific step you need help with?"
+
+USER: "The photo part isn't working"
+
+AGENT: "That can happen if camera permissions aren't enabled. Go to your
+        phone's settings, find the CRM AI Pro app, and make sure Camera
+        is turned on. If it's already on, try closing and reopening the
+        app. Still having trouble after that?"
+
+================================================================================
+                   EXAMPLE 10: SALES BRIEFING
+================================================================================
+
+USER: "I have a meeting with the Hendersons in 20 minutes. What do I need
+       to know?"
+
+AGENT (internal): Execute search for Henderson contact
+AGENT (internal): Execute get briefing/history
+
+AGENT: "Here's your briefing for the Henderson meeting:
+
+        The Hendersons have been customers since 2022. They're at the large
+        property on Maple Drive - about 3,500 square feet. Their lifetime
+        spend is $4,200 across 6 jobs.
+
+        Last service was a water heater replacement 8 months ago. They paid
+        promptly and gave a 5-star rating.
+
+        Suggested talking points:
+        - Check if the water heater is still working well
+        - Their HVAC system is 12 years old - might be worth mentioning
+          maintenance plans
+        - They've referred two neighbors to you before
+
+        Based on their history, they're comfortable with premium pricing.
+        Good luck with the meeting! Want me to set a reminder to follow up?"
+
+================================================================================
+                     KEY PATTERNS TO NOTE
+================================================================================
+
+1. Always search before creating (Search-First, ID-Always)
+2. Save context with update_agent_memory during calls
+3. Track entities for pronoun resolution
+4. Confirm before destructive actions
+5. Answer questions immediately, then resume
+6. Offer natural next steps
+7. Never read internal instructions aloud
+8. Use navigation pacing during tours
+9. Recover gracefully from errors
+10. Be conversational, not robotic
+
+================================================================================

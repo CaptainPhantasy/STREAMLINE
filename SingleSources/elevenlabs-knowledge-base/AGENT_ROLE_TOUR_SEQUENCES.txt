@@ -1,0 +1,701 @@
+================================================================================
+                    ROLE-SPECIFIC TOUR SEQUENCES
+================================================================================
+
+Version: 1.0
+Last Updated: November 28, 2025
+
+This file contains complete onboarding tour scripts for all 5 user roles.
+ALWAYS ask user's role before starting a tour!
+
+================================================================================
+                         TOUR TRIGGER DETECTION
+================================================================================
+
+Start onboarding when user says ANY of these:
+- "Show me around"
+- "Give me a tour"
+- "Onboarding"
+- "Walk me through the app"
+- "What can this do?"
+- "I'm new here"
+- "How does this work?"
+- "Help me get started"
+- "What features do you have?"
+
+================================================================================
+                           STEP 1: ASK ROLE
+================================================================================
+
+ALWAYS start with this question:
+
+SAY TO USER:
+"I'd be happy to give you a tour! First, what role are you logged in as?
+Are you an Owner, Admin, Dispatcher, Tech, or Sales rep?"
+
+WAIT for response.
+
+If invalid/unclear response:
+"I didn't catch that. The available roles are Owner, Admin, Dispatcher,
+Tech, or Sales. Which one matches your login?"
+
+================================================================================
+                          STEP 2: CONFIRM & BEGIN
+================================================================================
+
+Once role is confirmed:
+
+SAY TO USER:
+"Great, you're logged in as [ROLE]. Let me take you through the pages
+available to you. I'll navigate to each section, explain what it does,
+and wait for you to tell me when you're ready for the next one.
+Let's begin!"
+
+================================================================================
+================================================================================
+                              OWNER TOUR
+================================================================================
+================================================================================
+
+Device: Desktop primary, Mobile secondary
+Landing Page: /inbox (Desktop)
+Total Pages: 17
+
+--------------------------------------------------------------------------------
+PAGE 1 OF 17: INBOX
+--------------------------------------------------------------------------------
+NAVIGATE TO: inbox
+
+SAY TO USER:
+"This is your Inbox - the central hub for all communications. You can see
+messages from customers, internal notes, and AI-suggested responses.
+Everything flows through here so you never miss an important message.
+The AI can draft replies for you, and you can organize conversations
+with tags and filters. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 2 OF 17: JOBS
+--------------------------------------------------------------------------------
+NAVIGATE TO: jobs
+
+SAY TO USER:
+"Now we're in Jobs - the heart of your operations. This is where you manage
+all work orders. You can see jobs organized by status: leads, scheduled,
+in progress, completed, and invoiced. Click any job to see full details,
+assign technicians, add materials, or generate invoices. The search and
+filters help you find exactly what you need. Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 3 OF 17: CONTACTS
+--------------------------------------------------------------------------------
+NAVIGATE TO: contacts
+
+SAY TO USER:
+"This is your customer database. Every customer is here with their complete
+history - past jobs, invoices, communications, and notes. You can add tags
+to segment customers like 'VIP' or 'Commercial'. The search finds customers
+by name, phone, email, or address. Click any contact to see their full
+profile and job history. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 4 OF 17: CALENDAR
+--------------------------------------------------------------------------------
+NAVIGATE TO: calendar
+
+SAY TO USER:
+"The Calendar shows all scheduled jobs and team availability. You can see
+your week at a glance, drag and drop to reschedule jobs, and identify
+scheduling conflicts. It syncs with Google Calendar and Microsoft 365
+if you've connected those integrations. Different colors indicate
+different job types or technicians. Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 5 OF 17: DISPATCH MAP
+--------------------------------------------------------------------------------
+NAVIGATE TO: dispatch
+
+SAY TO USER:
+"This is the Dispatch Map - your command center for field operations.
+You can see all technicians in real-time with GPS tracking. Jobs appear
+as pins on the map. The left sidebar shows each tech with their status,
+current job, and performance rating. You can drag jobs to assign them,
+click a tech to see their schedule, or use auto-assign to let the system
+pick the best tech based on location and workload. This is incredibly
+powerful for optimizing your field operations. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 6 OF 17: ANALYTICS
+--------------------------------------------------------------------------------
+NAVIGATE TO: analytics
+
+SAY TO USER:
+"Analytics gives you insights into your business performance. You'll see
+key metrics like revenue trends, job completion rates, average job value,
+and customer satisfaction scores. The charts update in real-time and you
+can filter by date range. This helps you spot trends and make data-driven
+decisions. Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 7 OF 17: REPORTS
+--------------------------------------------------------------------------------
+NAVIGATE TO: reports
+
+SAY TO USER:
+"The Reports section provides detailed business reports. You can generate
+revenue reports, job summaries, technician performance comparisons, and
+customer analytics. Reports can be exported to PDF or Excel for your
+accountant or business planning. Some reports run automatically on
+schedule. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 8 OF 17: FINANCE
+--------------------------------------------------------------------------------
+NAVIGATE TO: finance
+
+SAY TO USER:
+"Finance shows your financial overview - total revenue, outstanding
+invoices, payment history, and accounts receivable aging. You can see
+which invoices are overdue and need follow-up, track payment trends over
+time, and monitor your cash flow. This is your financial dashboard for
+the business. Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 9 OF 17: CAMPAIGNS
+--------------------------------------------------------------------------------
+NAVIGATE TO: campaigns
+
+SAY TO USER:
+"Campaigns lets you create email marketing to reach your customers. You can
+build promotional campaigns, seasonal offers, maintenance reminders, or
+re-engagement sequences for inactive customers. The system tracks open
+rates, click rates, and responses so you know what's working. You can
+schedule campaigns to send at optimal times. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 10 OF 17: EMAIL TEMPLATES
+--------------------------------------------------------------------------------
+NAVIGATE TO: email-templates
+
+SAY TO USER:
+"Email Templates are reusable content blocks for your campaigns and
+automated messages. You can create templates for appointment confirmations,
+follow-up emails, thank you notes, review requests, and invoice reminders.
+Templates support variables like customer name and job details that get
+filled in automatically. Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 11 OF 17: TAGS
+--------------------------------------------------------------------------------
+NAVIGATE TO: tags
+
+SAY TO USER:
+"Tags help you organize and segment your customers and jobs. You can create
+tags like 'VIP Customer', 'Commercial Account', 'Needs Follow-Up', or
+'Referred By Website'. Then use these tags to filter contacts, target
+campaigns, or generate reports for specific customer segments.
+Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 12 OF 17: SETTINGS
+--------------------------------------------------------------------------------
+NAVIGATE TO: settings
+
+SAY TO USER:
+"Settings is where you configure your account. You can update company
+information like name, address, and logo. Set business hours and service
+areas. Configure notification preferences. Manage your profile and
+password. This is also where you'll find integration settings.
+Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 13 OF 17: USERS (Admin)
+--------------------------------------------------------------------------------
+NAVIGATE TO: admin/users
+
+SAY TO USER:
+"As an Owner, you have full access to User Management. Here you can add
+new team members, assign roles - like Tech, Dispatcher, Sales, or Admin.
+Each role has different permissions and sees different parts of the app.
+You can also deactivate users, reset passwords, and manage who has access
+to sensitive features like finances. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 14 OF 17: AUTOMATION
+--------------------------------------------------------------------------------
+NAVIGATE TO: admin/automation
+
+SAY TO USER:
+"Automation Rules let you set up automatic actions based on triggers.
+For example: automatically send a thank-you email when a job is completed,
+notify you when a customer gives a low rating, or escalate overdue invoices.
+The system can work while you sleep, handling routine tasks automatically.
+You can create custom rules or use pre-built templates.
+Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 15 OF 17: LLM PROVIDERS
+--------------------------------------------------------------------------------
+NAVIGATE TO: admin/llm-providers
+
+SAY TO USER:
+"LLM Providers is where you configure the AI models that power the system.
+You can choose between OpenAI, Anthropic Claude, or Google's models for
+different features. Each provider has strengths - some are better for
+writing, others for analysis. You can set which model handles which tasks
+and manage your API keys here. Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 16 OF 17: AUDIT LOG
+--------------------------------------------------------------------------------
+NAVIGATE TO: admin/audit
+
+SAY TO USER:
+"The Audit Log tracks all important actions in your system. You can see
+who did what and when - every login, job creation, status change, and
+setting modification is logged. This is essential for security, compliance,
+troubleshooting, and understanding team activity. You can filter by user,
+action type, or date range. Ready for the final section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 17 OF 17: INTEGRATIONS
+--------------------------------------------------------------------------------
+NAVIGATE TO: integrations
+
+SAY TO USER:
+"Finally, Integrations is where you connect external services. You can link
+Gmail or Microsoft 365 for email sync, Google Calendar or Outlook Calendar
+for scheduling, and set up payment processing. When connected, emails sync
+automatically, calendar events appear in the app, and everything stays
+in sync across your tools.
+
+That covers all 17 main sections available to you as an Owner! You have
+access to everything in the system. Is there any page you'd like to
+revisit, or any feature you'd like me to explain in more detail?"
+
+================================================================================
+================================================================================
+                              ADMIN TOUR
+================================================================================
+================================================================================
+
+Device: Desktop only
+Landing Page: /inbox
+Total Pages: 16 (Same as Owner with limited user management)
+
+Follow EXACT same tour as Owner with this ONE modification:
+
+--------------------------------------------------------------------------------
+PAGE 13: USERS (Admin) - MODIFIED
+--------------------------------------------------------------------------------
+NAVIGATE TO: admin/users
+
+SAY TO USER:
+"User Management lets you view team members and edit their information.
+As an Admin, you can modify existing users and update their roles, but
+creating brand new users requires Owner permissions. You can still edit
+contact information, change roles, and help manage the team.
+Ready for the next section?"
+
+All other 15 pages are IDENTICAL to Owner tour.
+
+================================================================================
+================================================================================
+                           DISPATCHER TOUR
+================================================================================
+================================================================================
+
+Device: Desktop primary (Dispatch Map focus), Mobile for field
+Landing Page: /dispatch/map
+Total Pages: 5
+
+--------------------------------------------------------------------------------
+PAGE 1 OF 5: DISPATCH MAP
+--------------------------------------------------------------------------------
+NAVIGATE TO: dispatch
+
+SAY TO USER:
+"This is the Dispatch Map - your command center. As a Dispatcher, this is
+where you'll spend most of your time. You can see all technicians in
+real-time with GPS tracking - the colored dots show where they are right
+now. Jobs appear as pins you can click for details.
+
+The left sidebar shows each tech with their status: available, on a job,
+or en route. You'll see their job count for the day and performance rating.
+
+To assign a job, you can drag it onto a tech, or use the auto-assign
+feature which picks the best tech based on location, workload, and skills.
+
+This is your hub for keeping the field running smoothly!
+Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 2 OF 5: JOBS
+--------------------------------------------------------------------------------
+NAVIGATE TO: jobs
+
+SAY TO USER:
+"The Jobs page shows all work orders in a list view. You can filter by
+status - see just scheduled jobs, or just jobs in progress. Filter by
+date to see today's jobs or this week's schedule. Filter by technician
+to see one person's workload.
+
+From here you create new jobs when customers call in, assign them to
+techs, update schedules, and track progress. Double-click any job to
+see full details and make changes. Ready to continue?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 3 OF 5: CONTACTS
+--------------------------------------------------------------------------------
+NAVIGATE TO: contacts
+
+SAY TO USER:
+"Contacts is your customer database. When a customer calls, you can quickly
+search by name, phone number, or address. You'll see their full history -
+previous jobs, any notes from techs, and contact preferences.
+
+This helps you provide great service - you can say 'Hi Mrs. Johnson,
+I see we fixed your water heater last month, how can I help today?'
+Ready for the next section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 4 OF 5: CALENDAR
+--------------------------------------------------------------------------------
+NAVIGATE TO: calendar
+
+SAY TO USER:
+"The Calendar shows all scheduled jobs and tech availability in a
+traditional calendar view. You can see the whole week, identify gaps
+in the schedule, and spot conflicts like double-bookings.
+
+Drag jobs to reschedule them, or click empty slots to create new jobs.
+It's great for planning the week ahead and optimizing routes by
+scheduling nearby jobs on the same day. Ready for the final section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 5 OF 5: SETTINGS
+--------------------------------------------------------------------------------
+NAVIGATE TO: settings
+
+SAY TO USER:
+"Settings lets you configure your profile and notification preferences.
+You can set up alerts for things like: tech running late, job taking too
+long, or a customer escalation. Customize which notifications you get
+by email versus in-app.
+
+That covers the 5 main sections for your Dispatcher role! Your focus is
+the Dispatch Map for real-time tracking, Jobs for managing work orders,
+Contacts for customer lookup, and Calendar for scheduling.
+
+Is there any section you'd like to revisit, or do you have questions
+about how to handle specific dispatch scenarios?"
+
+================================================================================
+================================================================================
+                              TECH TOUR
+================================================================================
+================================================================================
+
+Device: Mobile PWA ONLY (No desktop access)
+Landing Page: /m/tech/dashboard
+Total Pages: 4
+
+IMPORTANT - DESKTOP DETECTION:
+If you sense user might be on desktop, say:
+"Just so you know, the Tech role is designed specifically for mobile
+devices - it's a Progressive Web App that works offline in the field.
+For the best experience, access this on your phone or tablet. I can
+still explain what the mobile experience looks like though. Ready?"
+
+--------------------------------------------------------------------------------
+PAGE 1 OF 4: DASHBOARD
+--------------------------------------------------------------------------------
+NAVIGATE TO: tech
+
+SAY TO USER:
+"This is your Tech Dashboard - your home base. At the top, you'll see
+your current or next job highlighted with the customer name, address,
+and scheduled time. Below that is your full list of jobs for today.
+
+The big buttons are designed for easy tapping, even with work gloves
+on. You can quickly call the customer, get directions, or start the job.
+
+At the bottom, you'll see navigation to jump between Dashboard, your
+full job list, Map view, and your Profile with stats.
+
+The app works completely offline too - if you lose cell signal at a
+job site, everything keeps working and syncs when you reconnect.
+Ready to learn about the job workflow?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 2 OF 4: JOB DETAIL (7-Gate Workflow)
+--------------------------------------------------------------------------------
+SAY TO USER (Don't navigate - explain the workflow):
+"When you tap a job to start it, you'll go through a 7-step workflow.
+This keeps everything organized and protects both you and the company.
+Let me explain each step:
+
+Step 1 - Arrival: When you get to the job site, tap 'I've Arrived'.
+Your GPS location is automatically logged to prove you were there.
+
+Step 2 - Before Photos: Take pictures of the work area before you start.
+This documents the initial condition - super important if there's ever
+a dispute about existing damage.
+
+Step 3 - Work Complete: Once you've finished the actual work, tap this
+to confirm. It timestamps when the job was done.
+
+Step 4 - After Photos: Take pictures showing the completed work.
+This shows the customer exactly what you did and creates a record.
+
+Step 5 - Satisfaction Rating: Hand the phone to the customer and ask
+them to rate their experience 1 to 5 stars. If they rate 3 or below,
+the office is automatically notified to follow up.
+
+Step 6 - Review Request: If the customer is happy - 4 or 5 stars - you
+can offer them a 5% discount if they leave a Google review. This helps
+the company get more customers.
+
+Step 7 - Signature: Finally, the customer signs on your screen to confirm
+the job is complete. Your GPS departure is logged automatically.
+
+And that's it! The job is marked complete, and the office can generate
+an invoice. The whole workflow takes just a minute or two.
+Ready to see the map view?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 3 OF 4: MAP VIEW
+--------------------------------------------------------------------------------
+NAVIGATE TO: tech/map
+
+SAY TO USER:
+"The Map shows all your assigned jobs as pins. You can see at a glance
+where you need to go today. Tap any pin to see the job details - customer
+name, what needs to be done, and scheduled time.
+
+The Navigate button opens Google Maps or Apple Maps with turn-by-turn
+directions. Really useful when you're in an unfamiliar area.
+
+When you have multiple jobs, you can plan your route to minimize driving.
+The color of pins shows job priority or status.
+Ready for the final section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 4 OF 4: PROFILE
+--------------------------------------------------------------------------------
+NAVIGATE TO: tech/profile
+
+SAY TO USER:
+"Your Profile shows your performance stats. You'll see:
+- Total jobs completed this week and month
+- Your average customer rating out of 5 stars
+- Your on-time percentage - how often you arrive in the scheduled window
+- Jobs per day average
+
+These stats are what the office sees when evaluating performance and
+planning schedules. Keeping your ratings high and being on time are the
+keys to getting the best jobs assigned to you.
+
+That covers everything available to you as a Tech! The main workflow is:
+arrive, before photos, do the work, after photos, get the rating,
+offer the review discount if they're happy, and get the signature.
+
+Is there anything you'd like me to explain in more detail?"
+
+================================================================================
+================================================================================
+                              SALES TOUR
+================================================================================
+================================================================================
+
+Device: Mobile PWA ONLY (No desktop access)
+Landing Page: /m/sales/dashboard
+Total Pages: 5
+
+IMPORTANT - DESKTOP DETECTION:
+If you sense user might be on desktop, say:
+"Just so you know, the Sales role is designed specifically for mobile
+devices - it's a Progressive Web App for field sales. For the best
+experience, access this on your phone or tablet. I can still explain
+what the mobile experience looks like though. Ready?"
+
+--------------------------------------------------------------------------------
+PAGE 1 OF 5: DASHBOARD
+--------------------------------------------------------------------------------
+NAVIGATE TO: sales
+
+SAY TO USER:
+"This is your Sales Dashboard - mission control for your day. At the top,
+you'll see your next scheduled meeting with customer name, time, and
+location. Below that is your full meeting list for today and this week.
+
+The quick action buttons let you start a new meeting, record a voice note
+about a conversation, or access your lead pipeline.
+
+At the bottom, navigation takes you to Dashboard, Leads, Meetings history,
+and your Profile with performance stats.
+Ready to learn about the AI briefing feature? This one's really powerful."
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 2 OF 5: PRE-MEETING BRIEFING
+--------------------------------------------------------------------------------
+SAY TO USER (Explain the feature):
+"Before each meeting, you can tap to get an AI Briefing. This is like
+having a personal assistant who memorized everything about the customer.
+
+The AI analyzes their entire history with your company and generates:
+
+- Customer Background: Key facts about who they are, how long they've
+  been a customer, their property type
+
+- Lifetime Value: How much they've spent with you total, average job size
+
+- Job History: Previous services you've done for them, any issues or
+  callbacks
+
+- Suggested Talking Points: Conversation starters based on their history,
+  like 'Ask about how the water heater we installed is working'
+
+- Recommended Pricing: Based on what similar customers pay and their
+  history, what price range to target
+
+All this in 30 seconds before you walk in the door. It's a huge advantage.
+Ready to learn about meeting recording?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 3 OF 5: MEETING RECORDING
+--------------------------------------------------------------------------------
+SAY TO USER (Explain the feature):
+"The Meeting Recording feature is a game-changer for sales conversations.
+When you're with a customer, tap Record. The app transcribes everything
+in real-time using speech recognition - you'll see the words appear on
+screen as you talk.
+
+After the meeting, the AI analyzes the transcript and generates:
+
+- A Summary of the key points discussed
+- Action Items you committed to
+- Sentiment Analysis - was the customer excited, hesitant, concerned?
+- Follow-up Recommendations based on what was discussed
+
+You can pause and resume during the meeting. All recordings are saved
+and linked to the customer's profile so anyone on the team can see what
+was discussed. No more 'what did we talk about last time?'
+Ready to see the leads pipeline?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 4 OF 5: LEADS PIPELINE
+--------------------------------------------------------------------------------
+NAVIGATE TO: sales/leads
+
+SAY TO USER:
+"The Leads page shows your sales pipeline. Leads are organized by
+temperature: Hot leads at the top - people ready to buy. Warm leads
+in the middle - interested but need nurturing. Cold leads at the bottom -
+early stage prospects.
+
+Each lead shows the potential deal value and days since last contact.
+You can see at a glance who needs a follow-up call.
+
+Tap any lead to see their full profile, add notes, schedule a meeting,
+or update their status. The system can automatically prioritize leads
+based on engagement and likelihood to convert.
+Ready for the final section?"
+
+WAIT FOR: User confirmation
+
+--------------------------------------------------------------------------------
+PAGE 5 OF 5: PROFILE
+--------------------------------------------------------------------------------
+NAVIGATE TO: sales/profile
+
+SAY TO USER:
+"Your Profile shows your sales performance. You'll see:
+- Deals won this month and quarter
+- Total revenue you've generated
+- Your conversion rate - what percentage of leads become customers
+- Average deal size
+
+These metrics track your success and typically tie to commissions.
+The leaderboard shows how you compare to other sales reps.
+
+That covers everything available to you as a Sales rep! The key features
+to remember are: AI briefings before meetings to prepare, recording
+with transcription to capture everything, and the leads pipeline to
+manage your prospects.
+
+Is there anything you'd like me to explain in more detail?"
+
+================================================================================
+                           ERROR HANDLING
+================================================================================
+
+If user gets confused during tour:
+"Let me slow down. We're currently looking at [PAGE NAME]. This is where
+you [MAIN FUNCTION]. Would you like me to explain more, or shall we
+move on?"
+
+If user wants to skip ahead:
+"No problem! Which section would you like to jump to? Or I can continue
+from where we are."
+
+If user wants to go back:
+"Sure, let me take you back to [PREVIOUS PAGE]."
+[Navigate to previous page]
+[Re-explain that page]
+
+At end of any tour:
+"That covers all the main sections available to you as a [ROLE].
+Is there any page you'd like to revisit, or any feature you'd like
+me to explain in more detail?"
