@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "baseBranch": "main",
+  "remote": "origin",
+  "publish": true,
+  "gates": [
+    { "name": "install", "command": ["npm", "ci"], "required": true },
+    { "name": "tests", "command": ["npm", "test"], "required": true },
+    { "name": "typecheck", "command": ["npm", "run", "typecheck"], "required": true },
+    { "name": "lint", "command": ["npm", "run", "lint"], "required": true },
+    { "name": "build", "command": ["npm", "run", "build"], "required": true },
+    { "name": "audit", "command": ["npm", "audit", "--audit-level=low"], "required": true }
+  ],
+  "include": [
+    ".proofline.json",
+    "app/**",
+    "components/**",
+    "docs/knowledge-base/**",
+    "lib/**",
+    "scripts/agent-cli.ts",
+    "scripts/verification/**",
+    "supabase/migrations/**",
+    "eslint.config.mjs",
+    "next.config.mjs",
+    "package.json",
+    "package-lock.json",
+    "postcss.config.js",
+    "tailwind.config.ts",
+    "tsconfig.json"
+  ],
+  "deny": [
+    ".env",
+    ".env.*",
+    "*.pem",
+    "*.key",
+    "node_modules/**",
+    ".next/**",
+    ".git/**",
+    ".harness/**",
+    ".pi/**",
+    ".omp/**",
+    ".supercache/**",
+    "AGENT.MD",
+    "FLOYD.md",
+    "Issues/**",
+    "SSOT.md",
+    "SSOT/**",
+    "dogfood-output/**",
+    "docs/text-*",
+    "scripts/update-ryan-owner.ts",
+    "supabase/.temp/**"
+  ]
+}

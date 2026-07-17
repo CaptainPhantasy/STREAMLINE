@@ -48,9 +48,9 @@ export class TemplateEngine {
     const routeName = spec.name
     const filePath = `app/api/${routeName}/route.ts`
 
-    const code = this.generateAPICode(routeName)
-    const tests = this.generateAPITests(routeName)
-    const documentation = this.generateAPIDocumentation(routeName)
+    const code = this.generateAPICode(routeName, spec)
+    const tests = this.generateAPITests(routeName, spec)
+    const documentation = this.generateAPIDocumentation(routeName, spec)
 
     return {
       code,
@@ -373,4 +373,3 @@ function Component() {
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 }
-
